@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id          Int      @id @default(autoincrement())
+  clirkId     String   @unique
+  fname       String
+  lname       String?
+  arabicName  String
+  email       String   @unique
+  phoneNumber String
+  studentId   String   @unique
+  imgUrl      String?
+  academicGuide String?
+  failedSubjects FailedSubject[]
+  submissions  Submission[]
+  role        Role     @default(STUDENT)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  cpga        CGPA? 
+  @@map("students") // This is the table name in the database
+  @@index([clirkId, email, studentId])
+}
+
+model CGPA {
+  id        Int      @id @default(autoincrement())
+  studentId Int @unique
+  cgpa      Float
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  @@map("cgpa")
+}
+
+model FailedSubject {
+  id        Int      @id @default(autoincrement())
+  subjectId Int
+  studentId Int
+   student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  @@map("failed_subjects") // This is the table name in the database
+}
+
+
+model Submission {
+  id          Int      @id @default(autoincrement())
+  studentId   Int
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  isApproved  Boolean  @default(false)
+  pdfUrl      String?
+  subjects    SubjectSubmission[] // Explicit join table
+  @@map("submissions")
+}
+
+model Subject {
+  id          Int      @id @default(autoincrement())
+  name        String
+  isOpen      Boolean  @default(false)
+  prerequisites Int[]  // Array of subject IDs that are prerequisites
+  submissions SubjectSubmission[] // Explicit join table
+  @@map("subjects")
+}
+
+model SubjectSubmission {
+  submissionId Int
+  subjectId    Int
+  submission   Submission @relation(fields: [submissionId], references: [id])
+  subject      Subject    @relation(fields: [subjectId], references: [id])
+  @@id([submissionId, subjectId]) // Composite primary key
+  @@map("subject_submissions")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
