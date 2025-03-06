@@ -2,6 +2,7 @@ import {
     ClerkProvider,
 } from '@clerk/nextjs'
 
+import "./globals.css";
 
 import type { Metadata } from "next";
 
@@ -20,7 +21,6 @@ export default function RootLayout({
             <html lang="en">
                 <body>
                     <main>
-                        this is the layout
                         {children}
                     </main>
                 </body>

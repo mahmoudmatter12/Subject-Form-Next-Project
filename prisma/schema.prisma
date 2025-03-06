@@ -18,9 +18,9 @@ model Student {
   clirkId     String   @unique
   fname       String
   lname       String?
-  arabicName  String
+  arabicName  String?
   email       String   @unique
-  phoneNumber String
+  phoneNumber String?
   studentId   String   @unique
   imgUrl      String?
   academicGuide String?

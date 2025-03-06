@@ -134,4 +134,5 @@
 body{
   font-family: var(--font-sans);
   color: white;
+  background-color: black;
 }
