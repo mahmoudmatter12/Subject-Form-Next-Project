@@ -16,7 +16,6 @@ export default function OnboardingPage() {
     email: '',
     phoneNumber: '',
     studentId: '',
-    imgUrl: '',
   });
 
   // Update formData when the user object is available
@@ -29,7 +28,6 @@ export default function OnboardingPage() {
         email: user.emailAddresses?.[0]?.emailAddress || '',
         phoneNumber: '',
         studentId: '',
-        imgUrl: user.imageUrl,
       });
     }
   }, [user]);
@@ -38,15 +36,6 @@ export default function OnboardingPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
-  // const validateEmail = (email: string) => {
-  //   return email.includes('@') && email.includes('.');
-  // };
-
-  // const validateID = (id: string) => {
-  //   return id.length === 9;
-  // };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +60,7 @@ export default function OnboardingPage() {
 
       if (response.ok) {
         toast.success('Profile created successfully');
-        router.push('/user/dashboard'); // Redirect to the dashboard after onboarding
+        router.push('/dashboard'); // Redirect to the dashboard after onboarding
       } else if (response.status === 409) {
         const errorData = await response.json();
         toast.error(`${errorData.error}`);
@@ -158,20 +147,6 @@ export default function OnboardingPage() {
               id="phoneNumber"
               name="phoneNumber"
               value={formData.phoneNumber}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
-              Personal Image URL
-            </label>
-            <input
-              type="url"
-              id="url"
-              name="imgUrl"
-              value={formData.imgUrl}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               required

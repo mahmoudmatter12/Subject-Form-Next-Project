@@ -1,13 +1,14 @@
 import React from 'react'
-import GetUser from '@/lib/GetUser'
 import student from '@/types/student'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import NotAdmin from '@/components/ui/NotAdmin'
+import NotAdmin from '@/components/NotAdmin'
+import StudentsTable from '@/components/studentsTable'
+import { GetUser } from '@/lib/GetUser'
 
 const Admin = async () => {
     const { userId } = await auth();
-    const student = await GetUser() || {};
+    const student = await GetUser('/admin/dashboard');
     const { role } = student as student;
 
     if (!userId) {
@@ -27,7 +28,7 @@ const Admin = async () => {
     return (
         <div>
             <h1>Welcome to the Admin Dashboard</h1>
-
+            <StudentsTable />
             
         </div>
     )

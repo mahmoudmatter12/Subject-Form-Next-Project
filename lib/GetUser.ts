@@ -1,55 +1,65 @@
-import { currentUser } from "@clerk/nextjs/server";
-import { db } from "@/lib/db";
+// import { currentUser } from "@clerk/nextjs/server";
+// import { db } from "@/lib/db";
+// import student from "@/types/student";
+// import { redirect } from "next/navigation";
 
-interface User {
-  id: number;
-  clirkId: string;
-  fname: string;
-  lname: string | null;
-  email: string;
-  role: "STUDENT" | "ADMIN";
-  // Add other fields as needed
-}
+// export default async function GetUser(onboarding): Promise<student | null> {
+//   try {
+//     const user = await currentUser();
+    
+//     if (!user) {
+//       redirect("/sign-in");
+//     }
 
-export default async function GetUser(): Promise<User | null> {
-  try {
-    // Get the current user from Clerk
-    const clerkUser = await currentUser();
-
-    if (!clerkUser) { 
-      return null;
-    }
-
-    // Fetch the user from the database using `clerkId`
-    const dbUser = await db.student.findUnique({
-      where: {
-        clirkId: clerkUser.id, // Use `clerkId` instead of `id`
-      },
-    });
-
-    if (!dbUser) {
-      const newDbUser = await db.student.create({
-        data: {
-          clirkId: clerkUser.id,
-          email: clerkUser.emailAddresses[0].emailAddress,
-          fname: clerkUser.firstName || "",
-          lname: clerkUser.lastName,
-          role: "STUDENT",
-          arabicName: "", // Provide a default value or fetch from clerkUser if available
-          phoneNumber: "", // Provide a default value or fetch from clerkUser if available
-          studentId: "", // Provide a default value or generate a unique ID
-          imgUrl: clerkUser.imageUrl, // Fetch the profile image URL from clerkUser
-        },
-      });
-      return newDbUser;
-    }
+//     const student = await db.student.findFirstOrThrow({
+//       where: {
+//         clirkId: user.id,
+//       },
+//     });
     
 
-    // Return the user object
-    return dbUser;
 
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    return null;
+//     if(!student) {
+//       redirect("/onboarding");
+//     }
+//     return student;
+//   } catch (error) {
+//     console.error(error);
+//     return null;
+//   }
+// }
+
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { db } from "@/lib/db";
+
+interface Path { 
+  pathName?: string;
+}
+
+
+export const GetUser = async (
+  { pathName }: Path = { pathName: "" }
+) => {
+  const { userId } = await auth();
+
+  if (!userId ) {
+    console.log('no user auth')
+    return redirect("/sign-in");
   }
+
+  const Student = await db.student.findFirst({
+    where: { clirkId: userId },
+  });
+
+  if (!Student) {
+    console.log('no profile')
+    // return redirect("/onboarding");
+  }
+
+  if (Student && ! Student.onboarded && pathName !== "/onboarding"  && pathName !== "/"  ) {
+    redirect("/onboarding");
+  }
+
+  return Student;
 }

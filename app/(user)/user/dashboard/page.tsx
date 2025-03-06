@@ -2,14 +2,14 @@
 import { UserButton, SignOutButton} from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import GetUser from '@/lib/GetUser';
+import { GetUser } from '@/lib/GetUser';
 
 export default async function DashboardPage() {
   const { userId } = await auth()
   const student  = await GetUser();
   // console.log(student);
   // Redirect to sign-in if the user is not logged in
-  if (!userId ) {
+  if (!userId || !student ) {
     redirect('/sign-in');
   }
 

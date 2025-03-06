@@ -1,10 +1,11 @@
 interface student{
-    id: number;
+    id: string;
     clirkId: string;
     fname: string;
     lname: string | null;
     email: string;
     role: "STUDENT" | "ADMIN";
+    studentId: string;
     // Add other fields as needed
 }
 

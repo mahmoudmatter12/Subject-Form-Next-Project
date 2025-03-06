@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Student {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   clirkId     String   @unique
   fname       String
   lname       String?
@@ -30,30 +30,30 @@ model Student {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   cpga        CGPA? 
+  onboarded   Boolean  @default(false)
   @@map("students") // This is the table name in the database
   @@index([clirkId, email, studentId])
 }
 
 model CGPA {
-  id        Int      @id @default(autoincrement())
-  studentId Int @unique
+  id        String   @id @default(uuid())
+  studentId String   @unique
   cgpa      Float
   student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   @@map("cgpa")
 }
 
 model FailedSubject {
-  id        Int      @id @default(autoincrement())
-  subjectId Int
-  studentId Int
-   student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  subjectId String
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   @@map("failed_subjects") // This is the table name in the database
 }
 
-
 model Submission {
-  id          Int      @id @default(autoincrement())
-  studentId   Int
+  id          String   @id @default(uuid())
+  studentId   String
   student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   isApproved  Boolean  @default(false)
   pdfUrl      String?
@@ -62,17 +62,17 @@ model Submission {
 }
 
 model Subject {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   name        String
   isOpen      Boolean  @default(false)
-  prerequisites Int[]  // Array of subject IDs that are prerequisites
+  prerequisites String[]  // Array of subject IDs that are prerequisites
   submissions SubjectSubmission[] // Explicit join table
   @@map("subjects")
 }
 
 model SubjectSubmission {
-  submissionId Int
-  subjectId    Int
+  submissionId String
+  subjectId    String
   submission   Submission @relation(fields: [submissionId], references: [id])
   subject      Subject    @relation(fields: [subjectId], references: [id])
   @@id([submissionId, subjectId]) // Composite primary key
@@ -83,4 +83,3 @@ enum Role {
   STUDENT
   ADMIN
 }
-
