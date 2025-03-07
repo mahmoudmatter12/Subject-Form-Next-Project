@@ -4,22 +4,11 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { SignOutButton } from '@clerk/nextjs';
+import { toast } from 'react-toastify';
 export default function ProfilePage() {
   const { user } = useUser();
   const router = useRouter();
-  const [data,setdata] = useState(
-    {
-      fname: '',
-      lname: '',
-      arabicName: '',
-      email: '',
-      phoneNumber: '',
-      studentId: '',
-      academicGuide: '',
-      imgUrl: '',
-      cgpa: '',
-    }
-  );
 
   const [formData, setFormData] = useState({
     fname: '',
@@ -42,17 +31,6 @@ export default function ProfilePage() {
         .then((res) => res.json())
         .then((data) => {
           setFormData({
-            fname: data.fname,
-            lname: data.lname || '',
-            arabicName: data.arabicName || '',
-            email: data.email,
-            phoneNumber: data.phoneNumber || '',
-            studentId: data.studentId,
-            academicGuide: data.academicGuide || '',
-            imgUrl: data.imgUrl || '',
-            cgpa: data.cgpa || '',
-          });
-          setdata({
             fname: data.fname,
             lname: data.lname || '',
             arabicName: data.arabicName || '',
@@ -101,12 +79,14 @@ export default function ProfilePage() {
       });
 
       if (response.ok) {
-        alert('Profile updated successfully!');
+        toast.success('Profile updated successfully');
         setIsFormChanged(false);
       } else {
+        toast.error('Failed to update profile');
         console.error('Failed to update profile');
       }
     } catch (error) {
+      toast.error('Failed to update');
       console.error('Error updating profile:', error);
     }
   };
@@ -124,14 +104,14 @@ export default function ProfilePage() {
             height={48}
           />
           <h1 className="text-2xl font-bold mr-10">
-            {user?.fullName} 
+            {user?.fullName}
           </h1>
         </div>
         <button
           onClick={() => router.push('/user/dashboard')}
           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
         >
-          Go to Dashboard
+          Dashboard
         </button>
       </div>
 
@@ -230,7 +210,7 @@ export default function ProfilePage() {
               type="text"
               id="academicGuide"
               name="academicGuide"
-              value={formData.academicGuide}
+              value={formData.academicGuide || 'N/A'}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
               disabled
@@ -244,7 +224,7 @@ export default function ProfilePage() {
               type="text"
               id="cgpa"
               name="cgpa"
-              value={formData.cgpa}
+              value={formData.cgpa || 'N/A'}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
               disabled
@@ -266,19 +246,19 @@ export default function ProfilePage() {
 
           {/* Buttons Section */}
           <div className="flex justify-between mt-6">
-            <button
-              type="button"
-              onClick={() => router.push('/sign-out')}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+            <div 
+              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 cursor-pointer"
             >
-              Logout
-            </button>
+              <SignOutButton>
+                <button>sign out</button>
+              </SignOutButton>
+            </div>
+
             <button
               type="submit"
               disabled={!isFormChanged}
-              className={`bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 ${
-                !isFormChanged ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className={`bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 ${!isFormChanged ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
             >
               Update Profile
             </button>

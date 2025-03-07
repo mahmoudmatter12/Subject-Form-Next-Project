@@ -7,7 +7,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = await params.id;
+    const {id} = await params;
     // Check if the student ID is provided
     if (!id) {
       return NextResponse.json(
@@ -48,7 +48,7 @@ export async function PUT(
 
     // Update the student data
     const updatedStudent = await db.student.update({
-      where: { clirkId: params.id },
+      where: { clirkId: id },
       data: {
         fname,
         lname,
