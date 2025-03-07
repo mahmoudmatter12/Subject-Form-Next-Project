@@ -20,11 +20,11 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body>
-          {children}
-        <ToastContainer />
+        <body className="min-h-screen flex items-center justify-center bg-black text-white">
+            {children}
+            <ToastContainer />
         </body>
       </html>
-    </ClerkProvider>
+    </ClerkProvider >
   );
 }

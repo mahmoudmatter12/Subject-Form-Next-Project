@@ -7,7 +7,19 @@ import Image from 'next/image';
 export default function ProfilePage() {
   const { user } = useUser();
   const router = useRouter();
-
+  const [data,setdata] = useState(
+    {
+      fname: '',
+      lname: '',
+      arabicName: '',
+      email: '',
+      phoneNumber: '',
+      studentId: '',
+      academicGuide: '',
+      imgUrl: '',
+      cgpa: '',
+    }
+  );
 
   const [formData, setFormData] = useState({
     fname: '',
@@ -30,6 +42,17 @@ export default function ProfilePage() {
         .then((res) => res.json())
         .then((data) => {
           setFormData({
+            fname: data.fname,
+            lname: data.lname || '',
+            arabicName: data.arabicName || '',
+            email: data.email,
+            phoneNumber: data.phoneNumber || '',
+            studentId: data.studentId,
+            academicGuide: data.academicGuide || '',
+            imgUrl: data.imgUrl || '',
+            cgpa: data.cgpa || '',
+          });
+          setdata({
             fname: data.fname,
             lname: data.lname || '',
             arabicName: data.arabicName || '',
@@ -89,19 +112,19 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-black">
+    <div className="min-h-screen bg-black text-white p-6">
       {/* Top Section: User Name and Icon */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center">
           <Image
-            src={user?.imageUrl || "/next.svg"} // Fallback to a local image if user.imageUrl is undefined
+            src={user?.imageUrl || '/next.svg'} // Fallback to a local image if user.imageUrl is undefined
             alt="User Profile Image"
             className="w-12 h-12 rounded-full mr-4"
             width={48}
             height={48}
           />
-          <h1 className="text-2xl font-bold">
-            {user?.firstName} {user?.lastName}
+          <h1 className="text-2xl font-bold mr-10">
+            {user?.fullName} 
           </h1>
         </div>
         <button
@@ -113,11 +136,11 @@ export default function ProfilePage() {
       </div>
 
       {/* Form Section */}
-      <div className="bg-black p-6 rounded-lg shadow-md">
+      <div className="bg-gray-800 p-6 rounded-lg shadow-md">
         <h2 className="text-xl font-bold mb-6">Edit Your Profile</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="fname" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="fname" className="block text-sm font-medium text-gray-300">
               First Name
             </label>
             <input
@@ -126,12 +149,12 @@ export default function ProfilePage() {
               name="fname"
               value={formData.fname}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
               required
             />
           </div>
           <div>
-            <label htmlFor="lname" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="lname" className="block text-sm font-medium text-gray-300">
               Last Name
             </label>
             <input
@@ -140,11 +163,11 @@ export default function ProfilePage() {
               name="lname"
               value={formData.lname}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
             />
           </div>
           <div>
-            <label htmlFor="arabicName" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="arabicName" className="block text-sm font-medium text-gray-300">
               Arabic Name
             </label>
             <input
@@ -153,11 +176,11 @@ export default function ProfilePage() {
               name="arabicName"
               value={formData.arabicName}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-300">
               Email
             </label>
             <input
@@ -166,13 +189,13 @@ export default function ProfilePage() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
               required
               disabled
             />
           </div>
           <div>
-            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-300">
               Phone Number
             </label>
             <input
@@ -181,11 +204,11 @@ export default function ProfilePage() {
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
             />
           </div>
           <div>
-            <label htmlFor="studentId" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="studentId" className="block text-sm font-medium text-gray-300">
               Student ID
             </label>
             <input
@@ -194,13 +217,13 @@ export default function ProfilePage() {
               name="studentId"
               value={formData.studentId}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
               required
               disabled
             />
           </div>
           <div>
-            <label htmlFor="academicGuide" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="academicGuide" className="block text-sm font-medium text-gray-300">
               Academic Guide
             </label>
             <input
@@ -209,12 +232,12 @@ export default function ProfilePage() {
               name="academicGuide"
               value={formData.academicGuide}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
               disabled
             />
           </div>
           <div>
-            <label htmlFor="academicGuide" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="cgpa" className="block text-sm font-medium text-gray-300">
               CGPA
             </label>
             <input
@@ -223,12 +246,12 @@ export default function ProfilePage() {
               name="cgpa"
               value={formData.cgpa}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
               disabled
             />
           </div>
           <div>
-            <label htmlFor="academicGuide" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="imgurl" className="block text-sm font-medium text-gray-300">
               Personal Img
             </label>
             <input
@@ -237,7 +260,7 @@ export default function ProfilePage() {
               name="imgurl"
               value={formData.imgUrl}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
             />
           </div>
 
@@ -253,8 +276,9 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={!isFormChanged}
-              className={`bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 ${!isFormChanged ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+              className={`bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 ${
+                !isFormChanged ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
               Update Profile
             </button>

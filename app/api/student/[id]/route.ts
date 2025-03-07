@@ -7,8 +7,9 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const id = await params.id;
     // Check if the student ID is provided
-    if (!params.id) {
+    if (!id) {
       return NextResponse.json(
         { error: 'Student ID is required' },
         { status: 400 }
@@ -35,7 +36,7 @@ export async function PUT(
 
     // Check if the student exists
     const existingStudent = await db.student.findUnique({
-      where: { clirkId: params.id },
+      where: { clirkId: id },
     });
 
     if (!existingStudent) {
@@ -74,8 +75,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const { id } = await params;
     // Check if the student ID is provided
-    if (!params.id) {
+    if (!id) {
       return NextResponse.json(
         { error: 'Student ID is required' },
         { status: 400 }
@@ -84,7 +86,7 @@ export async function GET(
 
     // Fetch the student using clirkId
     const student = await db.student.findUnique({
-      where: { clirkId: params.id },
+      where: { clirkId: id },
     });
 
     // Handle case where student is not found

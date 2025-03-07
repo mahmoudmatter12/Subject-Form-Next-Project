@@ -6,8 +6,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const {id}  = await params
     // Check if the clirkId is provided
-    if (!params.id) {
+    if (!id) {
       return NextResponse.json(
         { error: "clirkId is required" },
         { status: 400 }
@@ -16,7 +17,7 @@ export async function GET(
 
     // Fetch the student using the clirkId
     const student = await db.student.findUnique({
-      where: { clirkId: params.id },
+      where: { clirkId: id },
     });
 
     // If no student is found, return a 404 error
