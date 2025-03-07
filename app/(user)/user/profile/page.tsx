@@ -18,6 +18,7 @@ export default function ProfilePage() {
     studentId: '',
     academicGuide: '',
     imgUrl: '',
+    cgpa: '',
   });
 
   const [isFormChanged, setIsFormChanged] = useState(false);
@@ -37,7 +38,21 @@ export default function ProfilePage() {
             studentId: data.studentId,
             academicGuide: data.academicGuide || '',
             imgUrl: data.imgUrl || '',
+            cgpa: data.cgpa || '',
           });
+        });
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (user?.id) {
+      fetch(`/api/cgpa/${user.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setFormData((prev) => ({
+            ...prev,
+            cgpa: data.cgpa,
+          }));
         });
     }
   }, [user?.id]);
@@ -193,6 +208,20 @@ export default function ProfilePage() {
               id="academicGuide"
               name="academicGuide"
               value={formData.academicGuide}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              disabled
+            />
+          </div>
+          <div>
+            <label htmlFor="academicGuide" className="block text-sm font-medium text-gray-700">
+              CGPA
+            </label>
+            <input
+              type="text"
+              id="cgpa"
+              name="cgpa"
+              value={formData.cgpa}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               disabled

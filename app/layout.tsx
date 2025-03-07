@@ -20,7 +20,8 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body>{children}
+        <body>
+          {children}
         <ToastContainer />
         </body>
       </html>

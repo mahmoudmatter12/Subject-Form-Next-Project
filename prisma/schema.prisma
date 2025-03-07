@@ -29,7 +29,6 @@ model Student {
   role        Role     @default(STUDENT)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  cpga        CGPA? 
   onboarded   Boolean  @default(false)
   @@map("students") // This is the table name in the database
   @@index([clirkId, email, studentId])
@@ -39,7 +38,6 @@ model CGPA {
   id        String   @id @default(uuid())
   studentId String   @unique
   cgpa      Float
-  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   @@map("cgpa")
 }
 
