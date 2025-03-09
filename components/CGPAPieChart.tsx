@@ -18,6 +18,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
+import PieChartSkeleton from "./PieChartSkeleton";
 
 interface CGPA {
     studentId: string;
@@ -83,32 +84,26 @@ export default function CGPAPieChart() {
         },
         "1-1.5 CGPA": {
             label: "1-1.5 CGPA (D)",
-            color: "red",
         },
         "1.5-2 CGPA": {
             label: "1.5-2 CGPA (C)",
-            color: "hsl(var(--chart-2))",
         },
         "2-2.5 CGPA": {
             label: "2-2.5 CGPA (C+)",
-            color: "hsl(var(--chart-3))",
         },
         "2.5-3 CGPA": {
             label: "2.5-3 CGPA (B)",
-            color: "hsl(var(--chart-4))",
         },
         "3-3.5 CGPA": {
             label: "3-3.5 CGPA (B+)",
-            color: "hsl(var(--chart-5))",
         },
         "3.5-4 CGPA": {
             label: "3.5-4 CGPA (A)",
-            color: "hsl(var(--chart-6))",
         },
     } satisfies ChartConfig;
 
     if (loading) {
-        return <p>Loading CGPA data...</p>;
+        return <PieChartSkeleton />;
     }
 
     if (error) {
@@ -136,7 +131,7 @@ export default function CGPAPieChart() {
                             labelLine={false}
                             label={({ range }) => `${range}`}
                             nameKey="range"
-                            fill={cgpaData.map((data) => data.fill)}
+                            fill="fill"
                         />
                     </PieChart>
                 </ChartContainer>

@@ -54,9 +54,9 @@ const Admin = async () => {
       {/* Content Section */}
       <div className="space-y-8">
         {/* All Students */}
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg overflow-x-auto custom-scrollbar ">
           <h2 className="text-2xl font-bold mb-4">All Students</h2>
-          <table className="w-full">
+          <table className="w-full ">
             <StudentsTable /> {/* StudentsTable is inside the table but properly structured */}
           </table>
         </div>

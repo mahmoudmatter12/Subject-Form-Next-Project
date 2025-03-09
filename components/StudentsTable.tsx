@@ -1,22 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import student from '@/types/student';
+import Student from '@/types/student';
 import { toast } from 'react-toastify';
-import CardSkeleton from './CardSkeleton';
-
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+// import CardSkeleton from './CardSkeleton';
+import StudentCard from './StudentCard';
+import StudentCardSkeleton from './StudentCardSkeleton';
 
 export default function StudentsTable() {
-  const [students, setStudents] = useState<student[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
 
   const handleDelete = async (id: string) => {
@@ -43,42 +35,27 @@ export default function StudentsTable() {
       .then((res) => res.json())
       .then((data) => {
         setStudents(data);
-        setLoading(false); // ✅ Fixed: setLoading only after data is received
+        setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
 
   if (loading) {
-    return <CardSkeleton />;
+    return <StudentCardSkeleton />;
   }
 
   return (
-    <>
-      <Table>
-        <TableCaption>A list of your recent students.</TableCaption>
-        <TableHeader>
-          <TableRow className="bg-gray-800 text-gray-300 hover:bg-transparent">
-            <TableHead className="text-left">Name</TableHead>
-            <TableHead className="text-left">Email</TableHead>
-            <TableHead className="text-left">Student ID</TableHead>
-            <TableHead className="text-left">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {students.map((student) => (
-            <TableRow key={student.id}>
-              <TableCell>{student.fname} {student.lname}</TableCell>
-              <TableCell>{student.email}</TableCell>
-              <TableCell>{student.studentId}</TableCell>
-              <TableCell>
-                <button className="text-blue-500 hover:underline" onClick={() => handleUpdate(student.id)}>Edit</button>
-                <button className="text-red-500 hover:underline ml-2" onClick={() => handleDelete(student.id)}>Delete</button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </>
-
+    <div className="overflow-x-auto">
+      <div className="flex gap-4 p-4 ">
+        {students.map((student) => (
+          <StudentCard
+            key={student.id}
+            student={student}
+            onEdit={handleUpdate}
+            onDelete={handleDelete}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
