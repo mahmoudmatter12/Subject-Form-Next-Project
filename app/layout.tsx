@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className="min-h-screen flex items-center justify-center bg-black text-white">
+        <body className="min-h-screen bg-gradient-to-r from-gray-900 to-black text-white p-8">
             {children}
             <ToastContainer />
         </body>

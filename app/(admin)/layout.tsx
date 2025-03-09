@@ -19,7 +19,7 @@ export default function RootLayout({
     return (
         <ClerkProvider>
             <html lang="en">
-                <body>
+                <body className='bg-gradient-to-r from-gray-900 to-black text-white' >
                     <main>
                         {children}
                     </main>

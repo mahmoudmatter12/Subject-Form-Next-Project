@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 function Gust() {
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-black">
+        <div className="min-h-screen flex flex-col items-center justify-center">
             <h1 className="text-4xl font-bold mb-8">Welcome to the Student Portal</h1>
 
             <div className="flex gap-4">

@@ -1,8 +1,10 @@
 import React from 'react'
-
+import CreateStudentForm from '@/components/CreateStudentForm'
 function page() {
   return (
-    <div>page</div>
+    <>
+    <CreateStudentForm />
+    </>
   )
 }
 

@@ -5,6 +5,16 @@ import student from '@/types/student';
 import { toast } from 'react-toastify';
 import CardSkeleton from './CardSkeleton';
 
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
 export default function StudentsTable() {
   const [students, setStudents] = useState<student[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +33,7 @@ export default function StudentsTable() {
   const handleUpdate = async (id: string) => {
     const response = await fetch(`/api/admin/students/${id}`, { method: 'PUT' });
     if (response.ok) {
+      toast.success('Student updated successfully');
       setStudents((prevStudents) => prevStudents.filter((student) => student.id !== id));
     }
   };
@@ -43,27 +54,30 @@ export default function StudentsTable() {
 
   return (
     <>
-      <thead>
-        <tr>
-          <th className="text-left">Name</th>
-          <th className="text-left">Email</th>
-          <th className="text-left">Student ID</th>
-          <th className="text-left">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {students.map((student) => (
-          <tr key={student.id}>
-            <td>{student.fname} {student.lname}</td>
-            <td>{student.email}</td>
-            <td>{student.studentId}</td>
-            <td>
-              <button className="text-blue-500 hover:underline" onClick={() => handleUpdate(student.id)}>Edit</button>
-              <button className="text-red-500 hover:underline ml-2" onClick={() => handleDelete(student.id)}>Delete</button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
+      <Table>
+        <TableCaption>A list of your recent students.</TableCaption>
+        <TableHeader>
+          <TableRow className="bg-gray-800 text-gray-300 hover:bg-transparent">
+            <TableHead className="text-left">Name</TableHead>
+            <TableHead className="text-left">Email</TableHead>
+            <TableHead className="text-left">Student ID</TableHead>
+            <TableHead className="text-left">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {students.map((student) => (
+            <TableRow key={student.id}>
+              <TableCell>{student.fname} {student.lname}</TableCell>
+              <TableCell>{student.email}</TableCell>
+              <TableCell>{student.studentId}</TableCell>
+              <TableCell>
+                <button className="text-blue-500 hover:underline" onClick={() => handleUpdate(student.id)}>Edit</button>
+                <button className="text-red-500 hover:underline ml-2" onClick={() => handleDelete(student.id)}>Delete</button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </>
 
   );

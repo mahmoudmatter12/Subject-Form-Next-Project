@@ -1,7 +1,7 @@
 'use client'; // Mark this as a Client Component
 
 import { useUser } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { SignOutButton } from '@clerk/nextjs';
@@ -9,6 +9,10 @@ import { toast } from 'react-toastify';
 export default function ProfilePage() {
   const { user } = useUser();
   const router = useRouter();
+
+  if(!user) {
+    redirect('/sign-in');
+  }
 
   const [formData, setFormData] = useState({
     fname: '',
@@ -92,7 +96,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
+    <div className="min-h-screen text-white p-6">
       {/* Top Section: User Name and Icon */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center">
