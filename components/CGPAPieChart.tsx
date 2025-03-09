@@ -25,7 +25,7 @@ interface CGPA {
 }
 
 export default function CGPAPieChart() {
-    const [cgpaData, setCGPAData] = useState<{ range: string; students: number }[]>([]);
+    const [cgpaData, setCGPAData] = useState<{ range: string; students: number; fill: string }[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -41,12 +41,12 @@ export default function CGPAPieChart() {
 
                 // Categorize CGPA data into ranges
                 const ranges = [
-                    { range: "1:1.5", students: 0, letter: "D" },
-                    { range: "1.5:2", students: 0, letter: "C" },
-                    { range: "2:2.5", students: 0, letter: "C+" },
-                    { range: "2.5:3", students: 0, letter: "B" },
-                    { range: "3:3.5", students: 0, letter: "B+" },
-                    { range: "3.5:4", students: 0, letter: "A" },
+                    { range: "1:1.5", students: 0, fill: "hsl(210, 80%, 70%)" }, // Light Blue
+                    { range: "1.5:2", students: 0, fill: "hsl(210, 70%, 60%)" }, // Medium Light Blue
+                    { range: "2:2.5", students: 0, fill: "hsl(210, 60%, 50%)" }, // Medium Blue
+                    { range: "2.5:3", students: 0, fill: "hsl(210, 50%, 40%)" }, // Medium Dark Blue
+                    { range: "3:3.5", students: 0, fill: "hsl(210, 40%, 30%)" }, // Dark Blue
+                    { range: "3.5:4", students: 0, fill: "hsl(210, 30%, 20%)" }, // Very Dark Blue
                 ];
 
                 data.forEach((cgpa) => {
@@ -136,7 +136,7 @@ export default function CGPAPieChart() {
                             labelLine={false}
                             label={({ range }) => `${range}`}
                             nameKey="range"
-                            fill="#8884d8"
+                            fill={cgpaData.map((data) => data.fill)}
                         />
                     </PieChart>
                 </ChartContainer>
