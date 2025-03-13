@@ -3,12 +3,12 @@ import React from "react";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import NotAdmin from "@/components/NotAdmin";
-import StudentsTable from "@/components/StudentsTable";
+import StudentsTable from "@/components/student/StudentsTable";
 import { GetUser } from "@/lib/GetUser";
 import student from "@/types/student";
 import { UserButton, SignOutButton } from "@clerk/nextjs";
 import Link from "next/link";
-import CGPAPieChart from "@/components/CGPAPieChart";
+import CGPAPieChart from "@/components/Cgpa/CGPAPieChart";
 const Admin = async () => {
   const { userId } = await auth();
   const student = await GetUser();

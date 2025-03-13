@@ -18,7 +18,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
-import PieChartSkeleton from "./PieChartSkeleton";
+import PieChartSkeleton from "../PieChartSkeleton";
 
 interface CGPA {
     studentId: string;

@@ -46,23 +46,20 @@ model CGPA {
 model Submission {
   id         String              @id @default(uuid())
   studentId  String
-  student    Student             @relation(fields: [studentId], references: [id], onDelete: Cascade)
   isApproved Boolean             @default(false)
-  pdfUrl     String?
-  subjects   SubjectSubmission[] // Explicit join table
+  Student Student[]
 
   @@map("submissions")
 }
 
 model Subject {
   id            String              @id @default(uuid())
+  subjectCode   String              @unique
   name          String
   isOpen        Boolean             @default(false)
   prerequisites String[] // Array of subject IDs that are prerequisites
-  submissions   SubjectSubmission[] // Explicit join table
-  Student       Student?            @relation(fields: [studentId], references: [id])
-  studentId     String?
   status        isPassed            @default(FAILED)
+  Student Student[]
 
   @@map("subjects")
 }
@@ -70,8 +67,6 @@ model Subject {
 model SubjectSubmission {
   submissionId String
   subjectId    String
-  submission   Submission @relation(fields: [submissionId], references: [id])
-  subject      Subject    @relation(fields: [subjectId], references: [id])
 
   @@id([submissionId, subjectId]) // Composite primary key
   @@map("subject_submissions")
