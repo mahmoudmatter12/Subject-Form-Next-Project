@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import GetUser from '@/actions/getUser';
+
 
 export default function OnboardingPage() {
   const { user } = useUser();
@@ -18,6 +20,33 @@ export default function OnboardingPage() {
     studentId: '',
     imgUrl: '',
   });
+
+  // Redirect to the dashboard if the user is already onboarded
+  useEffect(() => {
+    if (user?.id) {
+      GetUser(user.id).then((student) => {
+        if (student?.onboarded) {
+          // If the student is already onboarded, redirect to the dashboard
+          toast.info('You are already completed your profild');
+          router.push('/user/dashboard');
+        } else {
+          // If the student exists but is not onboarded, pre-fill the form
+          setFormData((prev) => ({
+            ...prev,
+            firstName: student?.fname || prev.firstName,
+            lastName: student?.lname || prev.lastName,
+            arabicName: student?.arabicName || prev.arabicName,
+            email: student?.email || prev.email,
+            phoneNumber: student?.phoneNumber || prev.phoneNumber,
+            studentId: student?.studentId || prev.studentId,
+            imgUrl: student?.imgUrl || prev.imgUrl,
+          }));
+        }
+      }).catch((error) => {
+        console.error('Failed to fetch student:', error);
+      });
+    }
+  }, [user, router]);
 
   // Update formData when the user object is available
   useEffect(() => {

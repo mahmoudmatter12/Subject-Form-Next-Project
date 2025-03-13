@@ -14,57 +14,56 @@ datasource db {
 }
 
 model Student {
-  id          String   @id @default(uuid())
-  clirkId     String   @unique
-  fname       String
-  lname       String?
-  arabicName  String?
-  email       String   @unique
-  phoneNumber String?
-  studentId   String   @unique
-  imgUrl      String?
-  academicGuide String?
-  failedSubjects FailedSubject[]
-  submissions  Submission[]
-  role        Role     @default(STUDENT)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  onboarded   Boolean  @default(false)
-  @@map("students") // This is the table name in the database
+  id            String       @id @default(uuid())
+  clirkId       String       @unique
+  fname         String
+  lname         String?
+  arabicName    String?
+  email         String       @unique
+  phoneNumber   String?
+  studentId     String       @unique
+  imgUrl        String?
+  academicGuide academicGuide?
+  subjects      Subject[] // Subjects that the student is enrolled in
+  submissions   Submission[]
+  role          Role         @default(STUDENT)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  onboarded     Boolean      @default(false)
+
   @@index([clirkId, email, studentId])
+  @@map("students") // This is the table name in the database
 }
 
 model CGPA {
-  id        String   @id @default(uuid())
-  studentId String   @unique
+  id        String @id @default(uuid())
+  studentId String @unique
   cgpa      Float
+
   @@map("cgpa")
 }
 
-model FailedSubject {
-  id        String   @id @default(uuid())
-  subjectId String
-  studentId String
-  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  @@map("failed_subjects") // This is the table name in the database
-}
-
 model Submission {
-  id          String   @id @default(uuid())
-  studentId   String
-  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  isApproved  Boolean  @default(false)
-  pdfUrl      String?
-  subjects    SubjectSubmission[] // Explicit join table
+  id         String              @id @default(uuid())
+  studentId  String
+  student    Student             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  isApproved Boolean             @default(false)
+  pdfUrl     String?
+  subjects   SubjectSubmission[] // Explicit join table
+
   @@map("submissions")
 }
 
 model Subject {
-  id          String   @id @default(uuid())
-  name        String
-  isOpen      Boolean  @default(false)
-  prerequisites String[]  // Array of subject IDs that are prerequisites
-  submissions SubjectSubmission[] // Explicit join table
+  id            String              @id @default(uuid())
+  name          String
+  isOpen        Boolean             @default(false)
+  prerequisites String[] // Array of subject IDs that are prerequisites
+  submissions   SubjectSubmission[] // Explicit join table
+  Student       Student?            @relation(fields: [studentId], references: [id])
+  studentId     String?
+  status        isPassed            @default(FAILED)
+
   @@map("subjects")
 }
 
@@ -73,6 +72,7 @@ model SubjectSubmission {
   subjectId    String
   submission   Submission @relation(fields: [submissionId], references: [id])
   subject      Subject    @relation(fields: [subjectId], references: [id])
+
   @@id([submissionId, subjectId]) // Composite primary key
   @@map("subject_submissions")
 }
@@ -80,4 +80,18 @@ model SubjectSubmission {
 enum Role {
   STUDENT
   ADMIN
+}
+
+enum isPassed {
+  PASSED
+  FAILED
+  NOT_ENROLLED
+}
+
+enum academicGuide {
+  DR_HELAL
+  DR_SALWA
+  DR_SAFAA
+  DR_SOHA
+  DR_SARA
 }

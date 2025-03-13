@@ -11,11 +11,10 @@ export default async function Home() {
   // Get the user's data
   const student = await GetUser({ pathName: "/" });
 
-  if (!student && userId) {
+  // Redirect to the onboarding page if the user is not onboard
+    if (!student && userId) {
     redirect('/onboarding');
   }
-
-
 
   if (!userId) {
     return <Gust />
