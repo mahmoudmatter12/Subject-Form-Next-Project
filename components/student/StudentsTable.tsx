@@ -41,11 +41,17 @@ export default function StudentsTable() {
   }, []);
 
   if (loading) {
-    return <StudentCardSkeleton />;
+    return <>
+      <div className='flex gap-4 p-4'>
+        <StudentCardSkeleton />;
+        <StudentCardSkeleton />;
+        <StudentCardSkeleton />;
+      </div>
+    </>
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto custom-scrollbar">
       <div className="flex gap-4 p-4 ">
         {students.map((student) => (
           <StudentCard

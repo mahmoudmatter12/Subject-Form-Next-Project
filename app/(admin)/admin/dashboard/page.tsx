@@ -9,6 +9,11 @@ import student from "@/types/student";
 import { UserButton, SignOutButton } from "@clerk/nextjs";
 import Link from "next/link";
 import CGPAPieChart from "@/components/Cgpa/CGPAPieChart";
+import SubjectTable from "@/components/Subject/SubjectTable";
+import SubjectForm from "@/components/Subject/SubjetForm";
+import { Separator } from "@/components/ui/separator";
+
+
 const Admin = async () => {
   const { userId } = await auth();
   const student = await GetUser();
@@ -62,20 +67,43 @@ const Admin = async () => {
         </div>
 
         {/* All Subjects */}
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-4">All Subjects</h2>
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg overflow-x-auto custom-scrollbar">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold mb-4">
+              All Subjects
+            </h2>
+            <SubjectForm />
+          </div>
+          <Separator orientation="horizontal" className="my-4" />
+
+          {/* filter and search */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <label htmlFor="filter" className="text-white">Filter:</label>
+              <select name="filter" id="filter" className="p-2 rounded-lg bg-gray-700 text-white">
+                <option value="all">All</option>
+                <option value="open">Open</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
+            <div>
+              <input type="text" placeholder="Search" className="p-2 rounded-lg bg-gray-700 text-white" />
+            </div>
+          </div>
           <table className="w-full">
             {/* Add subject table content here */}
+            <SubjectTable />
           </table>
         </div>
 
         {/* Opened Subjects */}
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-4">Opened Subjects</h2>
-          <table className="w-full">
-            {/* Add opened subjects table content here */}
-          </table>
-        </div>
+        {/* <div className="bg-gray-800 p-6 rounded-lg shadow-lg overflow-x-auto custom-scrollbar"> */}
+        {/* <h2 className="text-2xl font-bold mb-4">Opened Subjects</h2> */}
+        {/* <table className="w-full"> */}
+        {/* Add opened subjects table content here */}
+        {/* <OpenSubjectTable /> */}
+        {/* </table> */}
+        {/* </div> */}
 
         {/* Student Submissions */}
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg">

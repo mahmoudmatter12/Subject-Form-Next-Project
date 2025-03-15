@@ -18,7 +18,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
-import PieChartSkeleton from "../PieChartSkeleton";
+import PieChartSkeleton from "./PieChartSkeleton";
 
 interface CGPA {
     studentId: string;
@@ -102,9 +102,9 @@ export default function CGPAPieChart() {
         },
     } satisfies ChartConfig;
 
-    if (loading) {
-        return <PieChartSkeleton />;
-    }
+    // if (loading) {
+    //     return <PieChartSkeleton />;
+    // }
 
     if (error) {
         return <p className="text-red-500">{error}</p>;
@@ -116,26 +116,29 @@ export default function CGPAPieChart() {
                 <CardTitle>CGPA Distribution</CardTitle>
                 <CardDescription>Statistics based on student CGPA</CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 pb-0">
-                <ChartContainer
-                    config={chartConfig}
-                    className="mx-auto aspect-square max-h-[350px] px-0"
-                >
-                    <PieChart>
-                        <ChartTooltip
-                            content={<ChartTooltipContent nameKey="range" hideLabel />}
-                        />
-                        <Pie
-                            data={cgpaData}
-                            dataKey="students"
-                            labelLine={false}
-                            label={({ range }) => `${range}`}
-                            nameKey="range"
-                            fill="fill"
-                        />
-                    </PieChart>
-                </ChartContainer>
-            </CardContent>
+            {loading && <PieChartSkeleton />}
+            {!loading &&
+                <CardContent className="flex-1 pb-0">
+                    <ChartContainer
+                        config={chartConfig}
+                        className="mx-auto aspect-square max-h-[350px] px-0"
+                    >
+                        <PieChart>
+                            <ChartTooltip
+                                content={<ChartTooltipContent nameKey="range" hideLabel />}
+                            />
+                            <Pie
+                                data={cgpaData}
+                                dataKey="students"
+                                labelLine={false}
+                                label={({ range }) => `${range}`}
+                                nameKey="range"
+                                fill="fill"
+                            />
+                        </PieChart>
+                    </ChartContainer>
+                </CardContent>
+            }
             <CardFooter className="flex-col gap-2 text-sm">
                 <div className="leading-none text-muted-foreground">
                     Showing distribution of students across CGPA ranges

@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
 
 // update specific student
 export async function PUT(
@@ -7,29 +7,23 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const {id} = await params;
+    const { id } = await params;
     // Check if the student ID is provided
     if (!id) {
       return NextResponse.json(
-        { error: 'Student ID is required' },
+        { error: "Student ID is required" },
         { status: 400 }
       );
     }
 
     // Parse the request body
     const data = await request.json();
-    const {
-      fname,
-      lname,
-      arabicName,
-      phoneNumber,
-      imgurl,
-    } = data;
+    const { fname, lname, arabicName, phoneNumber, imgurl } = data;
 
     // Validate the request body
     if (!fname || !lname || !arabicName || !phoneNumber) {
       return NextResponse.json(
-        { error: 'Please fill in all the required fields' },
+        { error: "Please fill in all the required fields" },
         { status: 400 }
       );
     }
@@ -40,10 +34,7 @@ export async function PUT(
     });
 
     if (!existingStudent) {
-      return NextResponse.json(
-        { error: 'Student not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Student not found" }, { status: 404 });
     }
 
     // Update the student data
@@ -61,9 +52,9 @@ export async function PUT(
     // Return the updated student data
     return NextResponse.json(updatedStudent, { status: 200 });
   } catch (error) {
-    console.error('Error updating student:', error);
+    console.error("Error updating student:", error);
     return NextResponse.json(
-      { error: 'Failed to update student' },
+      { error: "Failed to update student" },
       { status: 500 }
     );
   }
@@ -79,7 +70,7 @@ export async function GET(
     // Check if the student ID is provided
     if (!id) {
       return NextResponse.json(
-        { error: 'Student ID is required' },
+        { error: "Student ID is required" },
         { status: 400 }
       );
     }
@@ -91,18 +82,15 @@ export async function GET(
 
     // Handle case where student is not found
     if (!student) {
-      return NextResponse.json(
-        { error: 'Student not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Student not found" }, { status: 404 });
     }
 
     // Return the student data
     return NextResponse.json(student);
   } catch (error) {
-    console.error('Error getting student:', error);
+    console.error("Error getting student:", error);
     return NextResponse.json(
-      { error: 'Failed to get student' },
+      { error: "Failed to get student" },
       { status: 500 }
     );
   }

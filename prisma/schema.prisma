@@ -14,22 +14,22 @@ datasource db {
 }
 
 model Student {
-  id            String       @id @default(uuid())
-  clirkId       String       @unique
+  id            String         @id @default(uuid())
+  clirkId       String         @unique
   fname         String
   lname         String?
   arabicName    String?
-  email         String       @unique
+  email         String         @unique
   phoneNumber   String?
-  studentId     String       @unique
+  studentId     String         @unique
   imgUrl        String?
   academicGuide academicGuide?
   subjects      Subject[] // Subjects that the student is enrolled in
   submissions   Submission[]
-  role          Role         @default(STUDENT)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  onboarded     Boolean      @default(false)
+  role          Role           @default(STUDENT)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  onboarded     Boolean        @default(false)
 
   @@index([clirkId, email, studentId])
   @@map("students") // This is the table name in the database
@@ -44,10 +44,10 @@ model CGPA {
 }
 
 model Submission {
-  id         String              @id @default(uuid())
+  id         String    @id @default(uuid())
   studentId  String
-  isApproved Boolean             @default(false)
-  Student Student[]
+  isApproved Boolean   @default(false)
+  Student    Student[]
 
   @@map("submissions")
 }
@@ -59,10 +59,11 @@ model Subject {
   isOpen        Boolean             @default(false)
   prerequisites String[] // Array of subject IDs that are prerequisites
   status        isPassed            @default(FAILED)
-  Student Student[]
+  Student       Student[]
 
   @@map("subjects")
 }
+
 
 model SubjectSubmission {
   submissionId String
