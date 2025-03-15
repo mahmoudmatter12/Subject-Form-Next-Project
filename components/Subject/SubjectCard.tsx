@@ -1,7 +1,6 @@
 // components/subject/SubjectCard.tsx
 import { Button } from '@/components/ui/button';
 import { Badge } from "@/components/ui/badge"
-
 interface SubjectCardProps {
   subject: {
     id: string;
@@ -9,7 +8,6 @@ interface SubjectCardProps {
     name: string;
     isOpen: boolean;
     prerequisites: string[];
-    status: string;
   };
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
@@ -23,10 +21,11 @@ export default function SubjectCard({ subject, onEdit, onDelete }: SubjectCardPr
         <Badge className={`absolute top-2 right-2 ${subject.isOpen ? 'bg-green-500' : 'bg-red-500'}`}>
           {subject.isOpen ? 'Open' : 'Closed'}
         </Badge>
+
         {/* Subject Code */}
-        <h2 className="text-xl font-bold m-2 text-center mb-2">
+        <h1 className="text-2xl font-bold m-2 text-center mb-2">
           {subject.name}
-        </h2>
+        </h1>
 
         {/* Subject Name */}
         <p className="text-gray-600 text-center mb-2">{subject.subjectCode}</p>
@@ -34,7 +33,7 @@ export default function SubjectCard({ subject, onEdit, onDelete }: SubjectCardPr
         {/* Toggle */}  
         {/* Prerequisites */}
         <p className="text-gray-600 text-center mb-4">
-          Prerequisites: {subject.prerequisites.join(', ')}
+          {subject.prerequisites.length === 0 ? 'No prerequisites' : 'Prerequisites: ' + subject.prerequisites.join(', ')}
         </p>
 
         {/* Actions */}
