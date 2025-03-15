@@ -100,6 +100,13 @@ export default function SubjectForm({ defaultValues, isEdit = false, onSubjectAd
           </DialogHeader>
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
             <div className="flex flex-col">
+              <div>
+                <Label htmlFor="name" className=' pb-4 ' >Name</Label>
+                <Input id="name" {...register('name')} placeholder="Enter subject name" />
+                {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+              </div>
+              <br />
+              <hr className="border-gray-500 mb-4 " />
               <Label htmlFor="subjectCode" className=' pb-4 ' >Subject Code</Label>
               <Input
                 id="subjectCode"
@@ -109,27 +116,6 @@ export default function SubjectForm({ defaultValues, isEdit = false, onSubjectAd
               {errors.subjectCode && (
                 <p className="text-sm text-red-500">{errors.subjectCode.message}</p>
               )}
-            </div>
-            <hr className="border-gray-500 mb-4 " />
-            <div>
-              <Label htmlFor="name" className=' pb-4 ' >Name</Label>
-              <Input id="name" {...register('name')} placeholder="Enter subject name" />
-              {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
-            </div>
-            <hr className="border-gray-500 mb-4 " />
-            <div className="flex items-center space-x-2 border-2 border-gray-500 p-2 rounded-lg">
-              <Controller
-                name="isOpen"
-                control={control}
-                render={({ field }) => (
-                  <Checkbox
-                    id="isOpen"
-                    checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(checked ?? false)}
-                  />
-                )}
-              />
-              <Label htmlFor="isOpen">Is Open for Enrollment</Label>
             </div>
             <hr className="border-gray-500 mb-4 " />
             <div>
@@ -143,6 +129,24 @@ export default function SubjectForm({ defaultValues, isEdit = false, onSubjectAd
                 <p className="text-sm text-red-500">{errors.prerequisites.message}</p>
               )}
             </div>
+            <hr className="border-gray-500 mb-4 " />
+            
+            <div className="flex items-center space-x-2 border-2 border-gray-500 p-2 rounded-lg">
+              <Controller
+                name="isOpen"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    id="isOpen"
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(checked ?? false)}
+                  />
+                )}
+              />
+              <Label htmlFor="isOpen">Is Open for Enrollment</Label>
+
+            </div>
+            <hr className="border-gray-500 mb-4 " />
             <Button className='cursor-pointer bg-gray-600 ' type="submit">{isEdit ? 'Update Subject' : 'Add Subject'}</Button>
           </form>
         </DialogContent>
