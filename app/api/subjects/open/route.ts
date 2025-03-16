@@ -7,6 +7,14 @@ export async function GET(){
             where: {
                 isOpen: true,
             },
+            select: {
+                id: true,
+                subjectCode: true,
+                name: true,
+                isOpen: true,
+                prerequisites: true,
+                creditHours: true,
+            },
         });
         return NextResponse.json({ subjects });
     } catch (error) {

@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { SignOutButton } from '@clerk/nextjs';
 import { toast } from 'react-toastify';
+
+
 export default function ProfilePage() {
   const { user } = useUser();
   const router = useRouter();
@@ -108,7 +110,7 @@ export default function ProfilePage() {
             height={48}
           />
           <h1 className="text-2xl font-bold mr-10">
-            {user?.fullName}
+            {formData?.fname} {formData?.lname}
           </h1>
         </div>
         <button

@@ -17,13 +17,16 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 const subjectSchema = z.object({
   subjectCode: z.string().min(1, 'Subject code is required'),
   name: z.string().min(1, 'Name is required'),
   isOpen: z.boolean().default(false),
   prerequisites: z.string().optional(),
+  creditHours: z.number().int().positive().default(3),
 });
+
 
 type SubjectFormValues = z.infer<typeof subjectSchema>;
 
@@ -35,7 +38,10 @@ interface SubjectFormProps {
 }
 
 export default function SubjectForm({ defaultValues, isEdit = false, onSubjectAdded }: SubjectFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -44,10 +50,11 @@ export default function SubjectForm({ defaultValues, isEdit = false, onSubjectAd
     control,
   } = useForm<SubjectFormValues>({
     resolver: zodResolver(subjectSchema),
-    defaultValues,
+    defaultValues: defaultValues || { subjectCode: '', name: '', isOpen: false, prerequisites: '', creditHours: 3 }
   });
 
   const handleFormSubmit: SubmitHandler<SubjectFormValues> = async (data) => {
+    setIsSubmitting(true);
     try {
       const response = await fetch('/api/subjects/create', {
         method: 'POST',
@@ -58,32 +65,39 @@ export default function SubjectForm({ defaultValues, isEdit = false, onSubjectAd
           subjectName: data.name,
           subjectCode: data.subjectCode,
           isOpen: data.isOpen,
-          prerequisites: data.prerequisites,
+          prerequisites: data.prerequisites || '',
+          creditHours: data.creditHours,
         }),
       });
 
       const text = await response.text();
-
       if (!response.ok) {
-        const errorData = JSON.parse(text);
-        toast.error(errorData.error || 'An error occurred');
+        try {
+          const errorData = JSON.parse(text);
+          toast.error(errorData.error || 'An error occurred');
+        } catch (e) {
+          console.error(e);
+          toast.error('An error occurred');
+        }
         return;
       }
 
+
       const result = JSON.parse(text);
-      // console.log(result);
       toast.success(`Subject ${isEdit ? 'updated' : 'created'} successfully!`);
-      window.location.reload();
+      router.refresh();
       setIsOpen(false);
       reset();
-      if (onSubjectAdded) {
-        onSubjectAdded(result);
-      }
+      onSubjectAdded?.(result);
+
     } catch (error) {
       console.error(error);
       toast.error((error as Error).message || 'An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
 
   return (
     <div>
@@ -130,7 +144,7 @@ export default function SubjectForm({ defaultValues, isEdit = false, onSubjectAd
               )}
             </div>
             <hr className="border-gray-500 mb-4 " />
-            
+
             <div className="flex items-center space-x-2 border-2 border-gray-500 p-2 rounded-lg">
               <Controller
                 name="isOpen"
@@ -139,15 +153,41 @@ export default function SubjectForm({ defaultValues, isEdit = false, onSubjectAd
                   <Checkbox
                     id="isOpen"
                     checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(checked ?? false)}
+                    onCheckedChange={(checked) => field.onChange(!!checked)}
                   />
                 )}
               />
               <Label htmlFor="isOpen">Is Open for Enrollment</Label>
 
             </div>
+
+            <div className="flex items-center space-x-2 border-2 border-gray-500 p-2 rounded-lg">
+              <Label htmlFor="creditHours">Credit Hours</Label>
+              <Controller
+                name="creditHours"
+                control={control}
+
+                render={({ field }) => (
+                  <Input
+                    id="creditHours"
+                    type="number"
+                    value={field.value || ''}
+                    onChange={(e) => field.onChange(+e.target.value)}
+                    placeholder="Enter credit hours"
+                  />
+                )}
+              />
+            </div>
+
             <hr className="border-gray-500 mb-4 " />
-            <Button className='cursor-pointer bg-gray-600 ' type="submit">{isEdit ? 'Update Subject' : 'Add Subject'}</Button>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="cursor-pointer bg-gray-600"
+              onClick={() => console.log('Form values:')} // <-- Debugging step
+            >
+              {isSubmitting ? 'Submitting...' : isEdit ? 'Update Subject' : 'Add Subject'}
+            </Button>
           </form>
         </DialogContent>
       </Dialog>

@@ -47,28 +47,37 @@ model Submission {
   id         String    @id @default(uuid())
   studentId  String
   isApproved Boolean   @default(false)
-  Student    Student[]
-
+  students   Student[]
+  craetedAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
   @@map("submissions")
 }
 
 model Subject {
-  id            String              @id @default(uuid())
-  subjectCode   String              @unique
+  id            String    @id @default(uuid())
+  subjectCode   String    @unique
   name          String
-  isOpen        Boolean             @default(false)
+  isOpen        Boolean   @default(false)
+  creditHours   Int       @default(3)
   prerequisites String[] // Array of subject IDs that are prerequisites
-  status        isPassed            @default(FAILED)
-  Student       Student[]
-
+  Students      Student[]
+  createdAt     DateTime  @default(now())
   @@map("subjects")
 }
 
+model UserEnrollment {
+  studentId String
+  subjectId String
+  isPassed  isPassed
+
+  @@id([studentId, subjectId]) // Composite primary key
+  @@map("user_enrollments")
+}
 
 model SubjectSubmission {
   submissionId String
   subjectId    String
-
+  createdAt    DateTime @default(now())
   @@id([submissionId, subjectId]) // Composite primary key
   @@map("subject_submissions")
 }

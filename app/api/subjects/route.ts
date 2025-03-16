@@ -6,6 +6,7 @@ export async function GET(){
         const subjects = await db.subject.findMany();
         return NextResponse.json({ subjects });
     } catch (error) {
+        console.error(error);
         return NextResponse.json({ error: (error as Error).message }, { status: 500 });
     }
 }

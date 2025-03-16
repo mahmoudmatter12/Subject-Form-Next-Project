@@ -1,89 +1,71 @@
-'use client';
+import React from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { GetUser } from '@/lib/GetUser'
+import MainUserForm from '@/components/SubjectUserForm/MainUserForm';
 
-import SubjectForm from '@/components/Subject/SubjetForm';
-import React, { useEffect, useState } from 'react';
+async function SubjectForm() {
 
-interface Subject {
-  id: string;
-  name: string;
-  isOpen: boolean;
-}
+  const student = await GetUser();
 
-interface Data {
-  subjects: Subject[];
-}
-
-function GetData() {
-  const [data, setData] = useState<Data | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch('/api/subjects');
-      const data = await response.json();
-      setData(data);
-    };
-    fetchData();
-  }, []);
-
-  return { data, setData };
-}
-
-function Page() {
-  const { data: subjects, setData } = GetData();
-  const [loading, setLoading] = useState(false);
-
-  const handleToggleStatus = async (subjectId: string) => {
-    try {
-      setLoading(true);
-
-      // Send a POST request to toggle the subject's status
-      const response = await fetch(`/api/subjects/${subjectId}`, {
-        method: 'POST',
-      });
-
-      if (response.ok) {
-        // Optimistically update the state
-        setData((prevData) => ({
-          subjects: prevData!.subjects.map((subject) =>
-            subject.id === subjectId
-              ? { ...subject, isOpen: !subject.isOpen }
-              : subject
-          ),
-        }));
-      } else {
-        console.error('Failed to update subject');
-      }
-    } catch (error) {
-      console.error('Error updating subject:', error);
-    } finally {
-      setLoading(false); // Reset loading state
-    }
-  };
 
   return (
-    <>
-    <SubjectForm onSubmit={(values) => console.log(values)} />
-      <h1>Subjects</h1>
-      {subjects?.subjects && subjects.subjects.map((subject) => (
-        <div key={subject.id}>
-          <li>{subject.name}</li>
-          <li>{subject.isOpen ? 'open' : 'closed'}</li>
-          <li>{subject.id}</li>
-          <ul>
-            <button
-              onClick={() => handleToggleStatus(subject.id)}
-              className={`p-4 m-4 cursor-pointer rounded-2xl ${
-                subject.isOpen ? 'border-green-400 bg-green-400' : 'border-red-400 bg-red-400'
-              }`}
-              disabled={loading}
+    <div className="min-h-screen  text-white p-8">
+      {/* Dashboard Container */}
+      <div className="w-full max-w-6xl mx-auto">
+        {/* Top Section */}
+        <div className="flex flex-col md:flex-row items-center justify-between mb-8">
+          {/* User Icon and Name */}
+          <div className="flex items-center gap-4 mb-4 md:mb-0 ">
+            <Image
+              src={student?.imgUrl || '/next.svg'} // Fallback to a local image if user.imageUrl is undefined
+              alt="User Profile Image"
+              className="w-12 h-12 rounded-full mr-4"
+              width={48}
+              height={48}
+            />
+            <p className="text-2xl font-bold mr-10 md:text-white">Welcome,{student.fname}!</p>
+
+          </div>
+
+          {/* Buttons */}
+          <div className="flex items-center gap-4">
+            <Link
+              href="/user/profile"
+              className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
             >
-              {subject.isOpen ? 'Close' : 'Open'}
-            </button>
-          </ul>
+              Profile
+            </Link>
+
+            {student.role === 'ADMIN' && (
+              <Link
+                href="/admin/dashboard"
+                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+              >
+                Admin Dashboard
+              </Link>
+            )}
+
+            {student.role === 'STUDENT' && (
+              <Link
+                href="/admin/dashboard"
+                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+              >
+                User Dashboard
+              </Link>
+            )}
+          </div>
         </div>
-      ))}
-    </>
-  );
+
+        {/* Horizontal Line */}
+        <hr className="border-gray-700 mb-8" />
+
+        {/* Form Section */}
+
+        <MainUserForm />
+      </div>
+    </div>
+  )
 }
 
-export default Page;
+export default SubjectForm
