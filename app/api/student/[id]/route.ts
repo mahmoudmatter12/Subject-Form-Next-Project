@@ -43,9 +43,15 @@ export async function PUT(
       data: {
         fname,
         lname,
+        fullName: fname + " " + lname,
         arabicName,
         phoneNumber,
         imgUrl: imgurl,
+        Level: data.level,
+        Program: data.program,
+        academicGuide: data.academicGuide
+
+
       },
     });
 

@@ -5,7 +5,11 @@ import React from 'react'
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 
-function StudentInfoForm() {
+interface StudentInfoFormProps {
+  onStudentInfoChange: (info: { arabicName: string; email: string; phoneNumber: string; studentId: string; academicGuide: string; cgpa: string; }) => void;
+}
+
+function StudentInfoForm({ onStudentInfoChange }: StudentInfoFormProps) {
 
   const { user } = useUser();
 
@@ -19,44 +23,33 @@ function StudentInfoForm() {
     cgpa: '',
   });
 
+
   // const [isFormChanged, setIsFormChanged] = useState(false);
 
   // Fetch the student's data
   useEffect(() => {
     if (user?.id) {
-      fetch(`/api/student/${user.id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setFormData({
-            arabicName: data.arabicName || '',
-            email: data.email,
-            phoneNumber: data.phoneNumber || '',
-            studentId: data.studentId,
-            academicGuide: data.academicGuide || '',
-            cgpa: data.cgpa || '',
-          });
-        });
+      Promise.all([
+        fetch(`/api/student/${user.id}`).then((res) => res.json())
+      ]).then(([studentData]) => {
+        const updatedFormData = {
+          arabicName: studentData.arabicName || '',
+          email: studentData.email,
+          phoneNumber: studentData.phoneNumber || '',
+          studentId: studentData.studentId,
+          academicGuide: studentData.academicGuide || '',
+          cgpa: studentData.cgpa || '',
+        };
+        setFormData(updatedFormData);
+        onStudentInfoChange(updatedFormData);
+      });
     }
-  }, [user?.id]);
-
-  useEffect(() => {
-    if (user?.id) {
-      fetch(`/api/cgpa/${user.id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setFormData((prev) => ({
-            ...prev,
-            cgpa: data.cgpa,
-          }));
-        });
-    }
-  }, [user?.id]);
-
+  }, [onStudentInfoChange, user?.id]);
 
   return (
     <>
       <h1 className="text-2xl font-bold text-white">Student Information</h1>
-      <form className="space-y-4">         
+      <form className="space-y-4">
         <div>
           <label htmlFor="arabicName" className="block text-sm font-medium text-gray-300">
             Arabic Name

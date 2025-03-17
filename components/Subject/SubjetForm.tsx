@@ -17,7 +17,6 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
 
 const subjectSchema = z.object({
   subjectCode: z.string().min(1, 'Subject code is required'),
@@ -39,7 +38,6 @@ interface SubjectFormProps {
 
 export default function SubjectForm({ defaultValues, isEdit = false, onSubjectAdded }: SubjectFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const {
@@ -85,7 +83,7 @@ export default function SubjectForm({ defaultValues, isEdit = false, onSubjectAd
 
       const result = JSON.parse(text);
       toast.success(`Subject ${isEdit ? 'updated' : 'created'} successfully!`);
-      router.refresh();
+      window.location.reload();
       setIsOpen(false);
       reset();
       onSubjectAdded?.(result);

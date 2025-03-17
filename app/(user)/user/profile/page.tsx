@@ -6,13 +6,14 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { SignOutButton } from '@clerk/nextjs';
 import { toast } from 'react-toastify';
+import { academicGuide, level, program } from '@prisma/client';
 
 
 export default function ProfilePage() {
   const { user } = useUser();
   const router = useRouter();
 
-  if(!user) {
+  if (!user) {
     redirect('/sign-in');
   }
 
@@ -26,6 +27,8 @@ export default function ProfilePage() {
     academicGuide: '',
     imgUrl: '',
     cgpa: '',
+    level: '',
+    program: '',
   });
 
   const [isFormChanged, setIsFormChanged] = useState(false);
@@ -46,26 +49,25 @@ export default function ProfilePage() {
             academicGuide: data.academicGuide || '',
             imgUrl: data.imgUrl || '',
             cgpa: data.cgpa || '',
+            level: data.Level || '',
+            program: data.Program || '',
           });
         });
     }
   }, [user?.id]);
 
-  useEffect(() => {
-    if (user?.id) {
-      fetch(`/api/cgpa/${user.id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setFormData((prev) => ({
-            ...prev,
-            cgpa: data.cgpa,
-          }));
-        });
-    }
-  }, [user?.id]);
+
+  console.log(formData);
 
   // Handle form changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setIsFormChanged(true);
+  };
+
+  // Handle select changes
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setIsFormChanged(true);
@@ -175,7 +177,7 @@ export default function ProfilePage() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white cursor-not-allowed"
               required
               disabled
             />
@@ -203,7 +205,7 @@ export default function ProfilePage() {
               name="studentId"
               value={formData.studentId}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white cursor-not-allowed"
               required
               disabled
             />
@@ -212,16 +214,57 @@ export default function ProfilePage() {
             <label htmlFor="academicGuide" className="block text-sm font-medium text-gray-300">
               Academic Guide
             </label>
-            <input
-              type="text"
+            <select
               id="academicGuide"
               name="academicGuide"
-              value={formData.academicGuide || 'N/A'}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
-              disabled
-            />
+              value={formData.academicGuide}
+              onChange={handleSelectChange}
+              className="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Academic Guide</option>
+              {Object.values(academicGuide).map((guide) => (
+                <option key={guide} value={guide}>{guide}</option>
+              ))}
+            </select>
           </div>
+          <div>
+            <label htmlFor="level" className="block text-sm font-medium text-gray-300">
+              Level
+            </label>
+            <select
+              id="level"
+              name="level"
+              value={formData.level}
+              onChange={handleSelectChange}
+              className="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Level</option>
+              {Object.values(level).map((lvl) => (
+                <option key={lvl} value={lvl}>{lvl}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="program" className="block text-sm font-medium text-gray-300">
+              Program
+            </label>
+            <select
+              id="program"
+              name="program"
+              value={formData.program}
+              onChange={handleSelectChange}
+              className="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Program</option>
+              {Object.values(program).map((prog) => (
+                <option key={prog} value={prog}>{prog}</option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label htmlFor="cgpa" className="block text-sm font-medium text-gray-300">
               CGPA
@@ -232,7 +275,7 @@ export default function ProfilePage() {
               name="cgpa"
               value={formData.cgpa || 'N/A'}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white cursor-not-allowed"
               disabled
             />
           </div>
@@ -252,7 +295,7 @@ export default function ProfilePage() {
 
           {/* Buttons Section */}
           <div className="flex justify-between mt-6">
-            <div 
+            <div
               className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 cursor-pointer"
             >
               <SignOutButton>

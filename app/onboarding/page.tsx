@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import GetUser from '@/actions/getUser';
+import { level, academicGuide, program } from '@prisma/client';
 
 
 export default function OnboardingPage() {
@@ -19,6 +20,9 @@ export default function OnboardingPage() {
     phoneNumber: '',
     studentId: '',
     imgUrl: '',
+    level: '',
+    program: '',
+    academicGuide: ''
   });
 
   // Redirect to the dashboard if the user is already onboarded
@@ -59,11 +63,15 @@ export default function OnboardingPage() {
         phoneNumber: '',
         studentId: '',
         imgUrl: user.imageUrl,
+        level: '',
+        program: '',
+        academicGuide: ''
+
       });
     }
   }, [user]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -78,16 +86,19 @@ export default function OnboardingPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/onboarding', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          clerkId: user?.id, // Link the user to their Clerk ID
+      const [response] = await Promise.all([
+        fetch('/api/onboarding', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...formData,
+            clerkId: user?.id, // Link the user to their Clerk ID
+          }),
         }),
-      });
+      ]);
+
 
       if (response.ok) {
         toast.success('Profile created successfully');
@@ -155,6 +166,60 @@ export default function OnboardingPage() {
               className="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+          </div>
+          <div>
+            <label htmlFor="level" className="block text-sm font-medium text-gray-300">
+              Level
+            </label>
+            <select
+              id="level"
+              name="level"
+              value={formData.level}
+              onChange={handleChange}
+              className="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Level</option>
+              {Object.values(level).map((lvl) => (
+                <option key={lvl} value={lvl}>{lvl}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="program" className="block text-sm font-medium text-gray-300">
+              Program
+            </label>
+            <select
+              id="program"
+              name="program"
+              value={formData.program}
+              onChange={handleChange}
+              className="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Program</option>
+              {Object.values(program).map((prog) => (
+                <option key={prog} value={prog}>{prog}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="academicGuide" className="block text-sm font-medium text-gray-300">
+              Academic Guide
+            </label>
+            <select
+              id="academicGuide"
+              name="academicGuide"
+              value={formData.academicGuide}
+              onChange={handleChange}
+              className="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Academic Guide</option>
+              {Object.values(academicGuide).map((guide) => (
+                <option key={guide} value={guide}>{guide}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-300">

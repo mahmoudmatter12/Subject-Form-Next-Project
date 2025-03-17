@@ -14,71 +14,91 @@ datasource db {
 }
 
 model Student {
-  id            String         @id @default(uuid())
-  clirkId       String         @unique
-  fname         String
-  lname         String?
-  arabicName    String?
-  email         String         @unique
-  phoneNumber   String?
-  studentId     String         @unique
-  imgUrl        String?
-  academicGuide academicGuide?
-  subjects      Subject[] // Subjects that the student is enrolled in
-  submissions   Submission[]
-  role          Role           @default(STUDENT)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  onboarded     Boolean        @default(false)
+  id               String           @id @default(uuid())
+  clirkId          String           @unique
+  studentId        String           @unique
+  fname            String
+  lname            String?
+  fullName         String?
+  arabicName       String?
+  email            String           @unique
+  phoneNumber      String?
+  imgUrl           String?
+  Level            level?
+  Program          program?
+  cgpa             String?
+  CGPA_Letter      String?
+  academicGuide    academicGuide?
+  subjects         Subject[]        @relation("StudentSubjects")
+  submissions      Submission[]
+  role             Role             @default(STUDENT)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  onboarded        Boolean          @default(false)
+  enrolledSubjects UserEnrollment[]
 
   @@index([clirkId, email, studentId])
-  @@map("students") // This is the table name in the database
+  @@map("students")
 }
 
 model CGPA {
-  id        String @id @default(uuid())
-  studentId String @unique
-  cgpa      Float
+  id          String  @id @default(uuid())
+  studentId   String? @unique
+  cgpa        String?
+  CGPA_Letter String?
 
   @@map("cgpa")
 }
 
 model Submission {
-  id         String    @id @default(uuid())
-  studentId  String
-  isApproved Boolean   @default(false)
-  students   Student[]
-  craetedAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id                String              @id @default(uuid())
+  studentId         String?
+  student           Student?            @relation(fields: [studentId], references: [id])
+  isApproved        Boolean             @default(false)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  SubjectSubmission SubjectSubmission[]
+  subjects          Subject[]           
+
   @@map("submissions")
 }
 
 model Subject {
-  id            String    @id @default(uuid())
-  subjectCode   String    @unique
-  name          String
-  isOpen        Boolean   @default(false)
-  creditHours   Int       @default(3)
-  prerequisites String[] // Array of subject IDs that are prerequisites
-  Students      Student[]
-  createdAt     DateTime  @default(now())
+  id                String              @id @default(uuid())
+  subjectCode       String              @unique
+  name              String
+  isOpen            Boolean             @default(false)
+  creditHours       Int                 @default(3)
+  prerequisites     String[]
+  students          Student[]           @relation("StudentSubjects")
+  createdAt         DateTime            @default(now())
+  UserEnrollment    UserEnrollment[]
+  SubjectSubmission SubjectSubmission[]
+  Submission        Submission?         @relation(fields: [submissionId], references: [id])
+  submissionId      String?
+
   @@map("subjects")
 }
 
 model UserEnrollment {
   studentId String
   subjectId String
-  isPassed  isPassed
+  status    Status   @default(NOT_ENROLLED)
+  student   Student? @relation(fields: [studentId], references: [id])
+  subject   Subject? @relation(fields: [subjectId], references: [id])
 
-  @@id([studentId, subjectId]) // Composite primary key
+  @@id([studentId, subjectId])
   @@map("user_enrollments")
 }
 
 model SubjectSubmission {
   submissionId String
   subjectId    String
-  createdAt    DateTime @default(now())
-  @@id([submissionId, subjectId]) // Composite primary key
+  submission   Submission @relation(fields: [submissionId], references: [id])
+  subject      Subject    @relation(fields: [subjectId], references: [id])
+  createdAt    DateTime   @default(now())
+
+  @@id([submissionId, subjectId])
   @@map("subject_submissions")
 }
 
@@ -87,10 +107,11 @@ enum Role {
   ADMIN
 }
 
-enum isPassed {
+enum Status {
   PASSED
   FAILED
   NOT_ENROLLED
+  ENROLLED
 }
 
 enum academicGuide {
@@ -99,4 +120,17 @@ enum academicGuide {
   DR_SAFAA
   DR_SOHA
   DR_SARA
+}
+
+enum level {
+  FRESHMAN
+  SOPHOMORE
+  JUNIOR
+  SENIOR
+}
+
+enum program {
+  Data_Science
+  Robotics
+  Muiltimedia
 }
