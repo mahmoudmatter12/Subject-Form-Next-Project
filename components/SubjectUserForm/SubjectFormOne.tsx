@@ -28,7 +28,7 @@ interface SubjectFormOneProps {
   checkedSubjects: { [key: string]: boolean };
 }
 
-function getMaxSubjectsAndHours(cgpa: string): { maxSubjects: number; maxHours: number; } {
+export function getMaxSubjectsAndHours(cgpa: string): { maxSubjects: number; maxHours: number; } {
   const cgpaNumber = parseFloat(cgpa);
 
   if (cgpaNumber >= 3) return { maxSubjects: 7, maxHours: 21 };
@@ -80,7 +80,7 @@ function canEnrollInSubject(subject: Subject, enrolledSubjects: enrolledSubjects
   };
 }
 
-function isMaxSubjectsOrHoursReached(checkedSubjects: { [key: string]: boolean }, subjects: Subject[], maxSubjects: number, maxHours: number): { reached: boolean; message?: string } {
+export function isMaxSubjectsOrHoursReached(checkedSubjects: { [key: string]: boolean }, subjects: Subject[], maxSubjects: number, maxHours: number): { reached: boolean; message?: string } {
   const totalChecked = Object.values(checkedSubjects).filter(Boolean).length;
   const totalHours = subjects
     .filter((subject) => checkedSubjects[subject.id])

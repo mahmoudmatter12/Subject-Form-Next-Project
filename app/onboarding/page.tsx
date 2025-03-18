@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import GetUser from '@/actions/getUser';
 import { level, academicGuide, program } from '@prisma/client';
-
+import { GetUser } from '@/actions/GetUser';
 
 export default function OnboardingPage() {
   const { user } = useUser();

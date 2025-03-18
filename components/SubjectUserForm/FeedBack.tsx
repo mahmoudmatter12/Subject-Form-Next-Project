@@ -15,6 +15,7 @@ interface FeedBackProps {
 
 const FeedBack = ({ totalHours, totalChecked, studentInfo, FeedBackMessage, isSubmissionValid, checkedSubjects }: FeedBackProps) => {
   const { user } = useUser();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const getMaxSubjectsAndHours = (cgpa: number) => {
     if (cgpa >= 3) return { maxSubjects: 7, maxHours: 21 };
     if (cgpa >= 2 && cgpa < 3) return { maxSubjects: 6, maxHours: 18 };
@@ -25,15 +26,18 @@ const FeedBack = ({ totalHours, totalChecked, studentInfo, FeedBackMessage, isSu
   const { maxSubjects, maxHours } = getMaxSubjectsAndHours(parseFloat(studentInfo?.cgpa) || 0);
 
   const handleSubmit = async () => {
+    if (isSubmitting) return; // Prevent duplicate requests
+
+    setIsSubmitting(true); // Ensure state is updated before async operation starts
+
     try {
       const selectedSubjects = Object.keys(checkedSubjects).filter((id) => checkedSubjects[id]);
 
       if (selectedSubjects.length === 0) {
         toast.error('Please select at least one subject.');
+        setIsSubmitting(false);
         return;
       }
-
-      console.log('Submitting:', selectedSubjects);
 
       const response = await fetch('/api/submissions/create', {
         method: 'POST',
@@ -45,12 +49,15 @@ const FeedBack = ({ totalHours, totalChecked, studentInfo, FeedBackMessage, isSu
 
       if (response.ok) {
         toast.success('Submission successful!');
+        window.location.reload();
       } else {
         toast.error(data.error || 'Submission failed');
       }
     } catch (error) {
       console.error('Error submitting:', error);
       toast.error('Something went wrong!');
+    } finally {
+      setIsSubmitting(false); // Ensure it's always reset after request completion
     }
   };
 
@@ -83,13 +90,14 @@ const FeedBack = ({ totalHours, totalChecked, studentInfo, FeedBackMessage, isSu
       </div>
 
       <button
-        className={`mt-6 w-full py-2 rounded-lg cursor-pointer text-white font-semibold ${isSubmissionValid ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-500 cursor-not-allowed'
-          }`}
+        className={`mt-6 w-full py-2 rounded-lg text-white font-semibold 
+    ${!isSubmissionValid || isSubmitting ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}
         onClick={handleSubmit}
-        disabled={!isSubmissionValid}
+        disabled={!isSubmissionValid || isSubmitting}  // This prevents clicking
       >
-        Submit
+        {isSubmitting ? "Submitting..." : "Submit"}
       </button>
+
     </div>
   );
 };

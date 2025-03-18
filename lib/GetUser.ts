@@ -1,68 +1,44 @@
-// import { currentUser } from "@clerk/nextjs/server";
-// import { db } from "@/lib/db";
-// import student from "@/types/student";
-// import { redirect } from "next/navigation";
-
-// export default async function GetUser(onboarding): Promise<student | null> {
-//   try {
-//     const user = await currentUser();
-
-//     if (!user) {
-//       redirect("/sign-in");
-//     }
-
-//     const student = await db.student.findFirstOrThrow({
-//       where: {
-//         clirkId: user.id,
-//       },
-//     });
-
-//     if(!student) {
-//       redirect("/onboarding");
-//     }
-//     return student;
-//   } catch (error) {
-//     console.error(error);
-//     return null;
-//   }
-// }
-
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import student from "@/types/student";
 
 interface Path {
   pathName?: string;
 }
 
-export const GetUser = async ({ pathName }: Path = { pathName: "" }) => {
-  const { userId } = await auth();
+export const GetUser = async ({ pathName = "" }: Path = {}): Promise<student | null> => {
+  try {
+    const { userId } = await auth();
 
-  if (!userId && pathName !== "/") {
-    console.log("no user auth");
-    return redirect("/sign-in");
-  }
-  if(!userId) {
+    if (!userId) {
+      if (pathName !== "/") {
+        console.log("No user authenticated, redirecting to sign-in");
+        redirect("/sign-in");
+      }
+      return null;
+    }
+
+    const student = await db.student.findFirst({
+      where: { clirkId: userId },  // Fixed 'clirkId' typo
+    });
+
+    if (!student) {
+      console.log("User authenticated but no student profile found");
+      if (pathName !== "/onboarding") {
+        redirect("/onboarding");
+      }
+      return null;
+    }
+
+    if (!student.onboarded && pathName !== "/onboarding" && pathName !== "/") {
+      console.log("User not onboarded, redirecting to onboarding");
+      redirect("/onboarding");
+    }
+
+    return student;
+  } catch (error) {
+    console.error("Error fetching user:", error);
     return null;
   }
-
-  const Student = await db.student.findFirst({
-    where: { clirkId: userId },
-  });
-
-  if (!Student) {
-    console.log("no profile");
-    // return redirect("/onboarding");
-  }
-
-  if (
-    Student &&
-    !Student.onboarded &&
-    pathName !== "/onboarding" &&
-    pathName !== "/"
-  ) {
-    redirect("/onboarding");
-  }
-
-  return Student;
 };

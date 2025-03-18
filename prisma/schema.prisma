@@ -54,11 +54,11 @@ model Submission {
   id                String              @id @default(uuid())
   studentId         String?
   student           Student?            @relation(fields: [studentId], references: [id])
-  isApproved        Boolean             @default(false)
+  status            SubmissionStatus    @default(PENDING)
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
   SubjectSubmission SubjectSubmission[]
-  subjects          Subject[]           
+  subjects          Subject[]
 
   @@map("submissions")
 }
@@ -133,4 +133,10 @@ enum program {
   Data_Science
   Robotics
   Muiltimedia
+}
+
+enum SubmissionStatus {
+  ACCSEPTED
+  REJECTED
+  PENDING
 }

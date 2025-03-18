@@ -1,24 +1,18 @@
 // app/not-found.tsx
-import Link from 'next/link';
-
-export const metadata = {
-  title: '404 - Page Not Found',
-  description: 'The page you are looking for does not exist.',
-};
+"use client";
+import { useRouter } from 'next/navigation';
 
 export default function NotFound() {
+  const router = useRouter();
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-gray-900 to-black text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center  text-white">
       <h1 className="text-6xl font-bold">404</h1>
       <p className="text-xl  mt-4">
         Oops! The page you&apos;re looking for doesn&apos;t exist.
       </p>
-      <Link
-        href="/user/dashboard"
-        className="mt-6 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
-      >
-        Go Back Home
-      </Link>
+      <button onClick={() => router.back()} className="mt-8 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 cursor-pointer">
+        ← Go Back
+      </button>
     </div>
   );
 }
