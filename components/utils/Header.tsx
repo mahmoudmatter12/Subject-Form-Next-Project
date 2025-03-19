@@ -8,7 +8,7 @@ async function Header() {
     if (!student) {
         return null;
     }
-    
+
     return (
         <>
             {/* Top Section */}
@@ -35,20 +35,32 @@ async function Header() {
                         Profile
                     </Link>
 
+
+
+
                     {student.role === 'ADMIN' && (
-                        <Link
-                            href="/admin/dashboard"
-                            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
-                        >
-                            Admin Dashboard
-                        </Link>
+                        <>
+                            <Link
+                                href="/admin/dashboard"
+                                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+                            >
+                                Admin Dashboard
+                            </Link>
+
+                            <Link
+                                href="/user/dashboard"
+                                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+                            >
+                                User Dashboard
+                            </Link>
+                        </>
                     )}
                     {student.role === 'STUDENT' && (
                         <Link
                             href="/user/dashboard"
                             className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
                         >
-                            Admin Dashboard
+                            User Dashboard
                         </Link>
                     )}
 

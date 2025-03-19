@@ -16,6 +16,7 @@ export default async function DashboardPage() {
     return (
         <>
             <div className="min-h-screen  text-white">
+              
                 {/* Dashboard Container */}
                 <div className="w-full max-w-6xl mx-auto">
                     <SubmitionFeedBack />

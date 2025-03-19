@@ -1,15 +1,9 @@
 import {
     ClerkProvider,
 } from '@clerk/nextjs'
-
+import Header from '@/components/utils/Header';
 import "./globals.css";
 
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-    title: "Subject Form",
-    description: "A form for submitting the rejested subjects",
-};
 
 export default function RootLayout({
     children,
@@ -18,13 +12,10 @@ export default function RootLayout({
 }) {
     return (
         <ClerkProvider>
-            <html lang="en">
-                <body >
-                    <main className='bg-gradient-to-r from-gray-900 to-black text-white'>
+                    <main className='bg-gradient-to-r from-gray-900 to-black text-white p-10'>
+                        <Header />
                         {children}
                     </main>
-                </body>
-            </html>
         </ClerkProvider>
     );
 }

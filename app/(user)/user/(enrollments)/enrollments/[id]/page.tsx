@@ -48,7 +48,7 @@ export default function UserEnrollmentsPage() {
 
 
   return (
-    <div className="min-h-screen bg-gray-900 p-6">
+    <div className="min-h-screen p-6">
       <header className="mb-8 flex flex-row justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white mb-6">User Enrollments</h1>

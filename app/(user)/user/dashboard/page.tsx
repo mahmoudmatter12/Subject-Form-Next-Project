@@ -1,22 +1,12 @@
 "use server";
 import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import { GetUser } from "@/lib/GetUser";
 import Link from "next/link";
-import Header from "@/components/utils/Header";
 import { getTotalSubmissions } from "@/actions/SubmitionFeedBack"; // Import function, not a value
-import {getTotalEnrolledSubjects} from "@/actions/EnrolledSubjects";
+import { getTotalEnrolledSubjects } from "@/actions/EnrolledSubjects";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
-  const student = await GetUser();
 
-  // Redirect to sign-in if the user is not logged in
-  if (!userId || !student) {
-    redirect("/sign-in");
-  }
-
-  // console.log(student);
 
   // Fetch total submissions count
   const { totalSubmissions } = await getTotalSubmissions();
@@ -26,8 +16,6 @@ export default async function DashboardPage() {
     <div className="min-h-screen text-white p-8">
       {/* Dashboard Container */}
       <div className="w-full max-w-6xl mx-auto">
-        {/* Top Section */}
-        <Header />
 
         {/* Content Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -36,7 +24,7 @@ export default async function DashboardPage() {
             <h2 className="text-2xl font-bold mb-4">Submissions</h2>
             <p className="text-gray-400 mb-4">
               Total Submissions:{" "}
-              <span className="text-white font-semibold">{totalSubmissions != 0 ? totalSubmissions : "No Submitions yet" }</span>
+              <span className="text-white font-semibold">{totalSubmissions != 0 ? totalSubmissions : "No Submitions yet"}</span>
             </p>
 
             <div className="flex flex-col gap-4">
@@ -53,7 +41,7 @@ export default async function DashboardPage() {
             <h2 className="text-2xl font-bold mb-4">Enrolled Subjects</h2>
             <p className="text-gray-400 mb-4">
               Total Enrolled Subjects:{" "}
-              <span className="text-white font-semibold">{totalEnrolledSubjects != 0 ? totalEnrolledSubjects : "No Enrolled subjects " }</span>
+              <span className="text-white font-semibold">{totalEnrolledSubjects != 0 ? totalEnrolledSubjects : "No Enrolled subjects "}</span>
             </p>
 
             <div className="flex flex-col gap-4">
@@ -68,7 +56,7 @@ export default async function DashboardPage() {
 
         </div>
 
-        
+
 
         <hr className="border-gray-700 mb-8 mt-8" />
 

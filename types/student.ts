@@ -1,4 +1,5 @@
 interface student{
+    name: ReactNode;
     id?: string;
     clirkId?: string;
     fname?: string;

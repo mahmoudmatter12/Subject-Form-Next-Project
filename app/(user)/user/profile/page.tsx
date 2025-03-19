@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SignOutButton } from "@clerk/nextjs";
 import { toast } from "react-toastify";
-import ProfileHeader from "./components/ProfileHeader";
 import ProfileForm from "./components/ProfileForm";
 
 
@@ -89,7 +88,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen text-white p-6">
-      <ProfileHeader user={user} firstName={formData.fname} lastName={formData.lname} />
       <ProfileForm
         formData={formData}
         onFormChange={handleChange}
