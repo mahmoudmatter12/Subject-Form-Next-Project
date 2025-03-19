@@ -1,7 +1,7 @@
 // hooks/useStudent.ts
 import { useEffect, useState } from 'react';
 import { User } from '@clerk/nextjs/server';
-import getUser from '@/actions/GetUser';
+import { GetUser } from '../actions/GetUser'
 
 export function useStudent(user: User | null) {
   const [student, setStudent] = useState(null);
@@ -9,7 +9,7 @@ export function useStudent(user: User | null) {
 
   useEffect(() => {
     if (user?.id) {
-      getUser(user.id)
+      GetUser(user.id)
         .then((data) => {
           setStudent(data);
         })

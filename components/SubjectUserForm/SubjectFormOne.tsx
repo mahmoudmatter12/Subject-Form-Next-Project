@@ -4,14 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
 import SubCard from './SubCard';
 import { toast } from 'react-toastify';
-
-interface Subject {
-  id: string;
-  subjectCode: string;
-  name: string;
-  prerequisites: string[];
-  creditHours: number;
-}
+import Subject from '@/types/subject';
 
 interface enrolledSubjects {
   status: string;
@@ -26,9 +19,14 @@ interface SubjectFormOneProps {
   setIsSubmissionValid?: (isValid: boolean) => void;
   setCheckedSubjects?: (checkedSubjects: { [key: string]: boolean }) => void;
   checkedSubjects: { [key: string]: boolean };
+  setFilteredSubjects?: (filteredSubjects: Subject[]) => void;
+  searchQuery?: string;
+  setSearchQuery?: (query: string) => void;
+  totalSubjects?: number;
+  setTotalSubjects?: (total: number) => void;
 }
 
-export function getMaxSubjectsAndHours(cgpa: string): { maxSubjects: number; maxHours: number; } {
+function getMaxSubjectsAndHours(cgpa: string): { maxSubjects: number; maxHours: number; } {
   const cgpaNumber = parseFloat(cgpa);
 
   if (cgpaNumber >= 3) return { maxSubjects: 7, maxHours: 21 };
@@ -37,13 +35,13 @@ export function getMaxSubjectsAndHours(cgpa: string): { maxSubjects: number; max
   return { maxSubjects: 4, maxHours: 12 };
 }
 
-function canEnrollInSubject(subject: Subject, enrolledSubjects: enrolledSubjects[]): { canEnroll: boolean; reason?: string; status?: 'NOT ENROLLED' | 'PREREQUISITES' | 'PASSED'|'ENROLLED'; } {
+function canEnrollInSubject(subject: Subject, enrolledSubjects: enrolledSubjects[]): { canEnroll: boolean; reason?: string; status?: 'NOT ENROLLED' | 'PREREQUISITES' | 'PASSED' | 'ENROLLED'; } {
   const passedSubjects = enrolledSubjects
     .filter((s) => s.status === 'PASSED')
     .map((s) => s.subject.subjectCode);
 
-  console.log('Passed Subjects:', passedSubjects);
-  console.log('Subject Prerequisites:', subject.prerequisites);
+  // console.log('Passed Subjects:', passedSubjects);
+  // console.log('Subject Prerequisites:', subject.prerequisites);
 
   if (passedSubjects.includes(subject.subjectCode)) {
     return {
@@ -65,7 +63,7 @@ function canEnrollInSubject(subject: Subject, enrolledSubjects: enrolledSubjects
     };
   }
 
-  if(enrolledSubjects.find((s) => s.subject.subjectCode === subject.subjectCode)) { 
+  if (enrolledSubjects.find((s) => s.subject.subjectCode === subject.subjectCode)) {
     return {
       canEnroll: false,
       reason: `You are already enrolled in ${subject.name} (${subject.subjectCode}).`,
@@ -80,7 +78,7 @@ function canEnrollInSubject(subject: Subject, enrolledSubjects: enrolledSubjects
   };
 }
 
-export function isMaxSubjectsOrHoursReached(checkedSubjects: { [key: string]: boolean }, subjects: Subject[], maxSubjects: number, maxHours: number): { reached: boolean; message?: string } {
+function isMaxSubjectsOrHoursReached(checkedSubjects: { [key: string]: boolean }, subjects: Subject[], maxSubjects: number, maxHours: number): { reached: boolean; message?: string } {
   const totalChecked = Object.values(checkedSubjects).filter(Boolean).length;
   const totalHours = subjects
     .filter((subject) => checkedSubjects[subject.id])
@@ -97,12 +95,61 @@ export function isMaxSubjectsOrHoursReached(checkedSubjects: { [key: string]: bo
   return { reached: false };
 }
 
-const SubjectFormOne = ({ onTotalHoursChange, onTotalCheckedChange, studentInfo, setFeedBackMessage, setIsSubmissionValid ,setCheckedSubjects ,checkedSubjects }: SubjectFormOneProps) => {
+const SubjectFormOne = ({ onTotalHoursChange, onTotalCheckedChange, studentInfo, setFeedBackMessage, setIsSubmissionValid, setCheckedSubjects, checkedSubjects }: SubjectFormOneProps) => {
   const { user } = useUser();
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  // const [checkedSubjects, setCheckedSubjects] = useState<{ [key: string]: boolean }>({});
   const [enrolledSubjects, setEnrolledSubjects] = useState<enrolledSubjects[]>([]);
   const isAlreadyCheckedSubjects = Object.values(checkedSubjects).filter(Boolean).length;
+
+  // total available subjects is the subjects that the user can select the subjects are that its status is not enrolled or passed or prerequisites
+  const [filteredSubjects, setFilteredSubjects] = useState<Subject[]>(subjects);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const totalAvailableSubjects = subjects.filter((subject) => {
+    const enrollmentResult = canEnrollInSubject(subject, enrolledSubjects);
+    return enrollmentResult.canEnroll;
+  }
+  );
+
+  console.log('Total Available Subjects:', totalAvailableSubjects.length);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    const filtered = subjects.filter((subject) => {
+      return subject.name.toLowerCase().includes(query.toLowerCase()) || subject.subjectCode.toLowerCase().includes(query.toLowerCase());
+    }
+    );
+    setFilteredSubjects(filtered);
+  };
+
+  const handleFilter = (filter: 'all' | 'NotEnrolled' | 'prerequisites') => {
+    if (filter === 'all') {
+      setFilteredSubjects(subjects);
+    } else if (filter === 'NotEnrolled') {
+      const filtered = subjects.filter((subject) => {
+        const enrollmentResult = canEnrollInSubject(subject, enrolledSubjects);
+        return enrollmentResult.canEnroll;
+      }
+      );
+      setFilteredSubjects(filtered);
+    } else if (filter === 'prerequisites') {
+      const filtered = subjects.filter((subject) => {
+        const enrollmentResult = canEnrollInSubject(subject, enrolledSubjects);
+        return !enrollmentResult.canEnroll;
+      }
+      );
+      setFilteredSubjects(filtered);
+    }
+    else if (filter === 'Enrolled') {
+      const filtered = subjects.filter((subject) => {
+        const enrollmentResult = canEnrollInSubject(subject, enrolledSubjects);
+        return !enrollmentResult.canEnroll;
+      }
+      );
+      setFilteredSubjects(filtered);
+    }
+  }
+
   useEffect(() => {
     if (user?.id) {
       fetch(`/api/subjects/open`)
@@ -124,7 +171,7 @@ const SubjectFormOne = ({ onTotalHoursChange, onTotalCheckedChange, studentInfo,
           .then((data) => {
             const enrolledSubjectsArray = data.subjects || [];
             setEnrolledSubjects(enrolledSubjectsArray);
-            console.log(enrolledSubjectsArray);
+            // console.log(enrolledSubjectsArray);
           })
           .catch((error) => {
             console.error('Error fetching enrolled subjects:', error);
@@ -144,6 +191,11 @@ const SubjectFormOne = ({ onTotalHoursChange, onTotalCheckedChange, studentInfo,
       .reduce((sum, subject) => sum + subject.creditHours, 0);
     onTotalHoursChange(totalCreditHours);
   }, [checkedSubjects, subjects, onTotalHoursChange, onTotalCheckedChange]);
+
+  useEffect(() => {
+    handleSearch(searchQuery);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subjects, searchQuery]);
 
   const handleCheckboxChange = useCallback(
     (id: string, isChecked: boolean) => {
@@ -197,26 +249,73 @@ const SubjectFormOne = ({ onTotalHoursChange, onTotalCheckedChange, studentInfo,
     <div className="bg-gray-900 p-6 rounded-lg shadow-xl">
       <h1 className="text-2xl font-bold text-white">Select Subjects</h1>
       <hr className="border-gray-700 mb-6" />
+      <div className="flex items-center gap-4 mb-4 rounded-2xl p-4 bg-gray-800">
+        <p className="text-lg text-gray-400">Total Subjects:
+          <br />
+          <span className=' text-white '>
+            {subjects.length}
+          </span></p>
+        <p className="text-lg text-gray-400">Total Available Subjects to select:<br />
+          <span className='text-white'>{totalAvailableSubjects.length}</span></p>
+      </div>
+
+      {/* filter and search */}
+      <div>
+        <div className="flex items-center gap-4 mb-4">
+          <input
+            type="text"
+            placeholder="Search subjects by name or code"
+            className="bg-gray-800 text-white px-4 py-2 rounded-lg w-full"
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+          <div className="flex items-center gap-4 mb-4">
+            <select
+              className="bg-gray-800 text-white px-4 py-2 mt-4 rounded-lg"
+              onChange={(e) => handleFilter(e.target.value as 'all' | 'NotEnrolled' | 'prerequisites')}
+            >
+              <option value="all">All</option>
+              <option value="NotEnrolled">Not Enrolled</option>
+              <option value="prerequisites">Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
       <form className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {subjects.map((subject) => {
-          const enrollmentResult = canEnrollInSubject(subject, enrolledSubjects);
-          // const maxReached = isMaxSubjectsOrHoursReached(checkedSubjects, subjects, getMaxSubjectsAndHours(studentInfo.cgpa).maxSubjects, getMaxSubjectsAndHours(studentInfo.cgpa).maxHours);
-          const isDisabled = !enrollmentResult.canEnroll;
-          const reason = enrollmentResult.reason ;
-          const status = enrollmentResult.status;
+        {filteredSubjects.length !== 0 ? (
+          filteredSubjects.map((subject) => {
+            const enrollmentResult = canEnrollInSubject(subject, enrolledSubjects);
+            const isDisabled = !enrollmentResult.canEnroll;
+            const reason = enrollmentResult.reason;
+            const status: 'NOT ENROLLED' | 'PREREQUISITES' | 'PASSED' | 'ENROLLED' = enrollmentResult.status || 'NOT ENROLLED';
 
-          return (
+            return (
+              <SubCard
+                key={subject.id}
+                SubInfo={subject}
+                checked={checkedSubjects[subject.id] || false}
+                onCheckboxChange={(isChecked) => handleCheckboxChange(subject.id, isChecked)}
+                disabled={isDisabled}
+                reason={reason}
+                status={status}
+              />
+            );
+          })
+        ) : (
+          <p className="text-gray-500 text-lg">
             <SubCard
-              key={subject.id}
-              SubInfo={subject}
-              onCheckboxChange={(isChecked) => handleCheckboxChange(subject.id, isChecked)}
-              disabled={isDisabled}
-              reason={reason}    
-              status={status}
+              SubInfo={{ name: 'No subjects found', subjectCode: 'No subjects found', creditHours: 0, prerequisites: [] }}
+              checked={false}
+              onCheckboxChange={(isChecked) => handleCheckboxChange('No subjects found', isChecked)}
+              disabled={true}
+              reason={'No subjects found'}
+              status={'NOT FOUND'}
             />
-          );
-        })}
+          </p>
+        )
+        }
+
       </form>
     </div>
   );

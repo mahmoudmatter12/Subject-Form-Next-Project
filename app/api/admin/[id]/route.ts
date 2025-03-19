@@ -27,6 +27,7 @@ export async function DELETE(
         { status: 400 }
       );
     }
+    
 
     // Delete the student
     await db.student.delete({ where: { id: studentId } });

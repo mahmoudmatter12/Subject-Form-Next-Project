@@ -10,7 +10,7 @@ import { UserButton, SignOutButton } from "@clerk/nextjs";
 import Link from "next/link";
 import CGPAPieChart from "@/components/Cgpa/CGPAPieChart";
 
-import Main from "@/components/Subject/main";
+import SubjectMainComp from "@/components/Subject/SubjectMainComp";
 
 
 const Admin = async () => {
@@ -65,9 +65,9 @@ const Admin = async () => {
           </table>
         </div>
 
-        {/* All Subjects */}
 
-        <Main />
+        {/* All Subjects */}
+        <SubjectMainComp />
 
         {/* Opened Subjects */}
         {/* <div className="bg-gray-800 p-6 rounded-lg shadow-lg overflow-x-auto custom-scrollbar"> */}

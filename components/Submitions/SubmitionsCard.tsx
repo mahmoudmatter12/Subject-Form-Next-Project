@@ -24,7 +24,10 @@ export default function SubmissionCard({ submission }: SubmissionCardProps) {
       className="bg-gray-700 p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-600 transition-colors"
       onClick={handleClick}
     >
+
+      
       <div className="flex justify-between items-center">
+
         <div>
           <p className="text-lg font-bold">Submission #{submission.id.slice(-6)}</p>
           <p className="text-sm">Created At: {new Date(submission.createdAt).toLocaleString()}</p>

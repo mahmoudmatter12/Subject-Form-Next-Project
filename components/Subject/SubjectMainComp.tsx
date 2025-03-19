@@ -17,7 +17,7 @@ interface Subject {
     status: string;
 }
 
-function Main() {
+function SubjectMainComp() {
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [filteredSubjects, setFilteredSubjects] = useState<Subject[]>([]);
     const [loading, setLoading] = useState(true);
@@ -166,4 +166,4 @@ function Main() {
     );
 }
 
-export default Main;
+export default SubjectMainComp;

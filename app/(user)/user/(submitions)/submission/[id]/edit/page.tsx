@@ -200,7 +200,7 @@ export default function EditSubmissionPage() {
                                 />
                                 <Button
                                     onClick={() => handleRemoveSubject(index)}
-                                    className=" bg-red-500 hover:bg-red-600 cursor-pointer"
+                                    className=" bg-red-500 hover:bg-red-600 cursor-pointer "
                                 >
                                     Remove Subject
                                 </Button>
