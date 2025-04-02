@@ -1,25 +1,19 @@
-// components/subject/SubjectCardSkeleton.tsx
-import { Skeleton } from '@/components/ui/skeleton';
-
-export default function SubjectCardSkeleton() {
+// SubjectCardSkeleton.tsx
+export function SubjectCardSkeleton() {
   return (
-    <div className="p-6 rounded-lg shadow-md w-72 flex-shrink-0">
-      {/* Subject Code Skeleton */}
-      <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
-
-      {/* Subject Name Skeleton */}
-      <Skeleton className="h-4 w-5/6 mx-auto mb-2" />
-
-      {/* Status Skeleton */}
-      <Skeleton className="h-4 w-1/2 mx-auto mb-2" />
-
-      {/* Prerequisites Skeleton */}
-      <Skeleton className="h-4 w-3/4 mx-auto mb-4" />
-
-      {/* Actions Skeleton */}
-      <div className="flex justify-center gap-4">
-        <Skeleton className="h-10 w-20" />
-        <Skeleton className="h-10 w-20" />
+    <div className="bg-gray-800/50 border border-gray-700/50 rounded-xl overflow-hidden animate-pulse">
+      <div className="p-4 border-b border-gray-700/50">
+        <div className="h-6 w-20 rounded-full bg-gray-700"></div>
+      </div>
+      <div className="p-5">
+        <div className="h-6 w-3/4 rounded bg-gray-700 mb-3"></div>
+        <div className="h-4 w-1/2 rounded bg-gray-700 mb-4"></div>
+        <div className="h-4 w-full rounded bg-gray-700 mb-2"></div>
+        <div className="h-4 w-2/3 rounded bg-gray-700 mb-6"></div>
+        <div className="flex justify-between gap-2">
+          <div className="h-8 w-24 rounded bg-gray-700"></div>
+          <div className="h-8 w-24 rounded bg-gray-700"></div>
+        </div>
       </div>
     </div>
   );

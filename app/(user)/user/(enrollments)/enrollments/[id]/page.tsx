@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import EnrollmentDetails from "./components/EnrollmentDetails";
 import { useRouter } from "next/navigation";
-
 interface Enrollment {
   id: string;
   subject: {
@@ -31,6 +30,7 @@ export default function UserEnrollmentsPage() {
       try {
         const response = await fetch(`/api/user/enroll/${id}`);
         if (!response.ok) {
+          toast.error("Failed to fetch enrollments");
           throw new Error("Failed to fetch enrollments");
         }
         const data = await response.json();

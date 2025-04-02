@@ -91,9 +91,22 @@ export async function DELETE(
       { status: 400 }
     );
   }
+
+  const subject = await db.subject.findUnique({
+    where: { id: id },
+  });
+
+  if (subject.submissionId !== null) {
+    return NextResponse.json(
+      {
+        error: "Cannot delete subject with existing enrollments or submissions",
+      },
+      { status: 400 }
+    );
+  }
+
   // Delete the subject
   await db.subject.delete({ where: { id: id } });
 
   return NextResponse.json({ message: "Subject deleted successfully" });
-
 }

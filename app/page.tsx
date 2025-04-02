@@ -1,33 +1,28 @@
 import { auth } from '@clerk/nextjs/server';
-
-import Gust from '@/components/Gust';
-import Landing from '@/components/Landing';
-import { GetUser } from '@/lib/GetUser';
 import { redirect } from 'next/navigation';
+import { GetUser } from '@/lib/GetUser';
+import Landing from '@/components/Home/Landing';
+import Guest from '@/components/Home/Gust';
+import student from '@/types/student';
 
 export default async function Home() {
-  // Check if the user is logged in
   const { userId } = await auth();
-  // Get the user's data
-  const student = await GetUser({ pathName: "/" });
+  const student = await GetUser({ pathName: "/" }) as student;
 
-  // Redirect to the onboarding page if the user is not onboard
-    if (!student && userId) {
+  // Redirect to onboarding if user exists but student data isn't complete
+  if (!student && userId) {
     redirect('/onboarding');
   }
 
+  // Show guest page if not logged in
   if (!userId) {
-    return <Gust />
-  }
-  // const { fname, role } = student as student
-
-  if (userId) {
-    return <>
-      <div className="w-full max-w-4xl p-6 rounded-lg shadow-md">
-        <Landing />
-      </div>
-    </>
+    return <Guest />;
   }
 
-
+  // Show landing page for authenticated users
+  return (
+    <div>
+      {student && <Landing student={student} />}
+    </div>
+  );
 }

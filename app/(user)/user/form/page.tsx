@@ -6,7 +6,7 @@ async function SubjectForm() {
 
 
   return (
-    <div className="min-h-screen  text-white p-8">
+    <div className="min-h-screen  text-white mx-auto px-6 py-0">
       {/* Dashboard Container */}
       <div className="w-full max-w-6xl mx-auto">
         {/* Form Section */}

@@ -2,24 +2,30 @@
 
 import { useEffect, useState } from 'react';
 import SubmissionCard from './SubmitionsCard';
+import Submission from '@/types/submition';
 
-export default function SubmitionsMain() {
-    const [submissions, setSubmissions] = useState<{ id: string; title: string; content: string; createdAt: string; isApproved: string }[]>([]);
+interface SubmissionProps {
+    id: string;
+}
+
+export default function SubmitionsMain({ id }: SubmissionProps) {
+    const [submissions, setSubmissions] = useState<Submission[]>([]);
 
     useEffect(() => {
         // Fetch the submissions data from your API
         const fetchSubmissions = async () => {
-            const response = await fetch('/api/submissions');
+            const response = await fetch(`/api/submissions/${id}`);
             const data = await response.json();
-            setSubmissions(data);
+            setSubmissions(Array.isArray(data) ? data : []);
         };
 
         fetchSubmissions();
-    }, []);
+    }, [id]);
 
     return (
         <div className="bg-gray-800 p-4 rounded-lg shadow-md">
             <h2 className="text-xl font-bold mb-4">My Submissions</h2>
+            
             <div className="space-y-4">
                 {submissions.map((submission) => (
                     <SubmissionCard key={submission.id} submission={submission} />

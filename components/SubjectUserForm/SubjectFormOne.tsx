@@ -111,7 +111,7 @@ const SubjectFormOne = ({ onTotalHoursChange, onTotalCheckedChange, studentInfo,
   }
   );
 
-  console.log('Total Available Subjects:', totalAvailableSubjects.length);
+  // console.log('Total Available Subjects:', totalAvailableSubjects.length);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -234,7 +234,7 @@ const SubjectFormOne = ({ onTotalHoursChange, onTotalCheckedChange, studentInfo,
         setIsSubmissionValid?.(false);
       } else {
         if (isAlreadyCheckedSubjects < 4) {
-          setFeedBackMessage('Please select at least 4 subject to proceed. still remaining subjects are: ' + (4 - isAlreadyCheckedSubjects));
+          setFeedBackMessage('Please select at least 4 subject to proceed. Subject remaning: ' + (4 - isAlreadyCheckedSubjects));
           setIsSubmissionValid?.(false);
         } else {
           setFeedBackMessage('');
@@ -246,32 +246,43 @@ const SubjectFormOne = ({ onTotalHoursChange, onTotalCheckedChange, studentInfo,
 
 
   return (
-    <div className="bg-gray-900 p-6 rounded-lg shadow-xl">
+    <div className="p-6 border-2 rounded-lg">
       <h1 className="text-2xl font-bold text-white">Select Subjects</h1>
-      <hr className="border-gray-700 mb-6" />
-      <div className="flex items-center gap-4 mb-4 rounded-2xl p-4 bg-gray-800">
-        <p className="text-lg text-gray-400">Total Subjects:
+      <hr className="border-white mb-6" />
+      <div className="flex items-center gap-4 mb-4 rounded-2xl p-4 border-2 flex-col md:flex-row justify-between">
+        <p className="text-lg text-gray-400">Total Subjects
           <br />
-          <span className=' text-white '>
+          <span className=' text-white text-3xl font-bold '>
             {subjects.length}
           </span></p>
-        <p className="text-lg text-gray-400">Total Available Subjects to select:<br />
-          <span className='text-white'>{totalAvailableSubjects.length}</span></p>
+        <p className="text-lg text-gray-400">Total Available Subjects to select<br />
+          <span className='text-white text-3xl font-bold'>{totalAvailableSubjects.length}</span></p>
       </div>
 
       {/* filter and search */}
       <div>
-        <div className="flex items-center gap-4 mb-4">
-          <input
-            type="text"
-            placeholder="Search subjects by name or code"
-            className="bg-gray-800 text-white px-4 py-2 rounded-lg w-full"
-            value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
+        <div className="flex items-center gap-4 mb-4 flex-col md:flex-row justify-between">
+          <div className="relative">
+            <svg
+              className="absolute left-3 top-5 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search subjects by name or code..."
+              style={{ color: 'white', paddingLeft: '2.5rem' }}
+              className="border border-gray-300 rounded-lg px-4 py-2 mb-4 min-w-[80px] max-w-[140] lg:min-w-[500px] "
+              onChange={(e) => handleSearch(e.target.value)}
+              value={searchQuery}
+            />
+          </div>
           <div className="flex items-center gap-4 mb-4">
             <select
-              className="bg-gray-800 text-white px-4 py-2 mt-4 rounded-lg"
+              className="bg-white text-sky-800 px-4 py-2 mt-4 rounded-lg"
               onChange={(e) => handleFilter(e.target.value as 'all' | 'NotEnrolled' | 'prerequisites')}
             >
               <option value="all">All</option>
@@ -299,6 +310,7 @@ const SubjectFormOne = ({ onTotalHoursChange, onTotalCheckedChange, studentInfo,
                 disabled={isDisabled}
                 reason={reason}
                 status={status}
+
               />
             );
           })

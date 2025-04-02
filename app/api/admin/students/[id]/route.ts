@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { GetUser } from "@/lib/GetUser";
+import student from "@/types/student";
 
 // change the admin role to student role -- must check if the role of the current user is admin or not ?
 export async function POST(
@@ -9,7 +10,8 @@ export async function POST(
 ) {
   try {
     // Require authentication
-    const student = await GetUser();
+    const student = await GetUser() as student;
+
     if (student.role !== "ADMIN") {
       return NextResponse.json(
         { error: "You are not authorized to access this resource" },

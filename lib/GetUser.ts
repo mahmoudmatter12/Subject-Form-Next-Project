@@ -14,7 +14,7 @@ export const GetUser = async ({ pathName = "" }: Path = {}): Promise<student | n
     if (!userId) {
       if (pathName !== "/") {
         console.log("No user authenticated, redirecting to sign-in");
-        redirect("/sign-in");
+        return null;
       }
       return null;
     }
@@ -26,7 +26,7 @@ export const GetUser = async ({ pathName = "" }: Path = {}): Promise<student | n
     if (!student) {
       console.log("User authenticated but no student profile found");
       if (pathName !== "/onboarding") {
-        redirect("/onboarding");
+        console.log("Redirecting to onboarding");
       }
       return null;
     }

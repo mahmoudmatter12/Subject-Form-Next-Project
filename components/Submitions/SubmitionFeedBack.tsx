@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+
+
 export default function SubmitionFeedBack() {
     const [feedback, setFeedback] = useState({
         totalSubmissions: 0,
@@ -13,7 +15,7 @@ export default function SubmitionFeedBack() {
     useEffect(() => {
         // Fetch the feedback data from your API
         const fetchFeedback = async () => {
-            const response = await fetch('/api/submissions/feedback');
+            const response = await fetch(`/api/submissions/feedback`);
             const data = await response.json();
             setFeedback(data);
         };

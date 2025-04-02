@@ -32,9 +32,9 @@ function SubCard({ SubInfo, onCheckboxChange, disabled, reason, status }: SubCar
     <div
       className={cn(
         'relative p-6 rounded-xl shadow-lg transition-all duration-300 ease-in-out',
-        'bg-gradient-to-br from-gray-800 to-sky-950 hover:scale-105',
+        'bg-gradient-to-br from-cyan-900 via-cyan-700 to-sky-900  hover:scale-105',
         {
-          'opacity-50': disabled,
+          'opacity-60': disabled,
           'opacity-100': !disabled
         },
         {
@@ -74,8 +74,8 @@ function SubCard({ SubInfo, onCheckboxChange, disabled, reason, status }: SubCar
       <div className="flex flex-col gap-4">
         {/* Subject Name & Code */}
         <div>
-          <p className="text-lg font-semibold text-white">{SubInfo.name}</p>
-          <p className="text-sm text-gray-400">{SubInfo.subjectCode}</p>
+          <div className="text-lg font-semibold text-white md:text-2xl">{SubInfo.name}</div>
+          <div className="text-lg text-gray-400">{SubInfo.subjectCode}</div>
         </div>
 
         {/* Status */}
@@ -91,12 +91,12 @@ function SubCard({ SubInfo, onCheckboxChange, disabled, reason, status }: SubCar
         <div className="flex flex-wrap gap-2">
           {SubInfo.prerequisites.length > 0 ? (
             SubInfo.prerequisites.map((prereq, index) => (
-              <Badge key={index} className="bg-gray-700 text-gray-200 px-2 py-1 text-xs">
+              <Badge key={index} className="bg-gray-700 text-white px-2 py-1 text-sm md:text-lg">
                 {prereq}
               </Badge>
             ))
           ) : (
-            <p className="text-gray-500 text-xs">No prerequisites</p>
+            <span className="text-white text-xs md:text-lg">No prerequisites</span>
           )}
         </div>
 
@@ -137,7 +137,7 @@ function SubCard({ SubInfo, onCheckboxChange, disabled, reason, status }: SubCar
                 <div
                   className={cn(
                     'w-10 h-5 flex items-center bg-gray-600 rounded-full p-1 transition-all',
-                    checked ? 'bg-green-500' : 'bg-gray-600'
+                    checked ? 'bg-green-500' : 'bg-cyan-600'
                   )}
                 >
                   <div

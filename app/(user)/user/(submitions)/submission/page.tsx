@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { GetUser } from '@/lib/GetUser';
 import SubmitionFeedBack from '@/components/Submitions/SubmitionFeedBack';
 import SubmitionsMain from '@/components/Submitions/SubmitionsMain';
+import student from '@/types/student';
 
 export default async function DashboardPage() {
     const { userId } = await auth();
@@ -12,6 +13,8 @@ export default async function DashboardPage() {
     if (!userId || !student) {
         redirect('/sign-in');
     }
+    
+    const { id } = student as student;
 
     return (
         <>
@@ -19,9 +22,9 @@ export default async function DashboardPage() {
               
                 {/* Dashboard Container */}
                 <div className="w-full max-w-6xl mx-auto">
-                    <SubmitionFeedBack />
+                    <SubmitionFeedBack/>
                     {/* FeedBack */}
-                    <SubmitionsMain />
+                    <SubmitionsMain id={id || ''}/>
                     {/*The Submitions  */}
                 </div>
             </div>

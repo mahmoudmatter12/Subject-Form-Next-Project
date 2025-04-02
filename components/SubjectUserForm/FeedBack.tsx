@@ -63,13 +63,13 @@ const FeedBack = ({ totalHours, totalChecked, studentInfo, FeedBackMessage, isSu
 
 
   return (
-    <div className="bg-gray-900 p-6 rounded-lg shadow-xl">
-      <h1 className="text-2xl font-bold text-white">Feedback</h1>
+    <div className="bg-gradient-to-t from-sky-800  to-sky-900 p-6 rounded-lg shadow-xl">
+      <h1 className="text-2xl lg:text-3xl font-bold text-white">Feedback</h1>
       <hr className="border-gray-700 mb-6" />
 
       {FeedBackMessage && (
         <div className=' rounded-lg p-6  border-red-700 border-2 m-6' >
-          <p className="text-gray-300">{FeedBackMessage}</p>
+          <p className="text-gray-300 lg:text-2xl">{FeedBackMessage}</p>
         </div>
 
       )}

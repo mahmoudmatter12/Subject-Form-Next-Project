@@ -1,81 +1,63 @@
-"use server";
+import { GetUser } from "@/lib/GetUser";
+import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import Link from "next/link";
-import { getTotalSubmissions } from "@/actions/SubmitionFeedBack"; // Import function, not a value
-import { getTotalEnrolledSubjects } from "@/actions/EnrolledSubjects";
+import TrackingSection from "./components/TrackingSection";
+import ImportantFormsSection from "./components/ImportantFormsSection";
+import Blogs from "./components/Blogs";
+import NotificationsCenter from "./components/NotificationsCenter";
+import RecentActivity from "./components/RecentActivity";
+import ActionsSection from "./components/ActionsSection";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
+  const student = await GetUser({ pathName: "/user/dashboard" });
 
-
-  // Fetch total submissions count
-  const { totalSubmissions } = await getTotalSubmissions();
-  const { totalEnrolledSubjects } = await getTotalEnrolledSubjects();
+  if (!student) {
+    console.log("No student profile found");
+    redirect("/sign-in");
+  }
+  if (!userId) {
+    console.log("No user authenticated");
+    redirect("/sign-in");
+  }
 
   return (
-    <div className="min-h-screen text-white p-8">
-      {/* Dashboard Container */}
-      <div className="w-full max-w-6xl mx-auto">
+    <div className="min-h-screen p-4 md:p-8">
+      {/* Welcome Header */}
 
-        {/* Content Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Submissions Card */}
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">Submissions</h2>
-            <p className="text-gray-400 mb-4">
-              Total Submissions:{" "}
-              <span className="text-white font-semibold">{totalSubmissions != 0 ? totalSubmissions : "No Submitions yet"}</span>
-            </p>
-
-            <div className="flex flex-col gap-4">
-              <Link
-                href="/user/submission"
-                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 cursor-pointer text-center"
-              >
-                View Submissions
-              </Link>
-            </div>
-          </div>
-
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">Enrolled Subjects</h2>
-            <p className="text-gray-400 mb-4">
-              Total Enrolled Subjects:{" "}
-              <span className="text-white font-semibold">{totalEnrolledSubjects != 0 ? totalEnrolledSubjects : "No Enrolled subjects "}</span>
-            </p>
-
-            <div className="flex flex-col gap-4">
-              <Link
-                href={`/user/enrollments/${userId}`}
-                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 cursor-pointer text-center"
-              >
-                View Enrollments
-              </Link>
-            </div>
-          </div>
-
-        </div>
-
-
-
-        <hr className="border-gray-700 mb-8 mt-8" />
-
-        {/* Subject Form Registration */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold mb-4">Subject Form Registration</h2>
-            <p className="text-gray-400 mb-4">
-              Register for your subjects for the upcoming semester.
-            </p>
-            <Link
-              href="/user/form"
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 cursor-pointer"
-            >
-              Register Now
-            </Link>
-          </div>
-        </div>
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          Welcome back, <span className="text-sky-400">{student.fname}</span>!
+        </h1>
+        <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          Heres whats happening with your academics
+        </p>
       </div>
+
+      {/* Tracking Section */}
+      <TrackingSection student={student} />
+      <hr className="my-8 border-white " />
+
+
+      <ImportantFormsSection />
+      <hr className="my-8 border-white " />
+
+
+      {/* Trending colorFULL Blogs Cards */}
+      <Blogs />
+      <hr className="my-8 border-white " />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Recent Notifications */}
+        <NotificationsCenter />
+        {/* Recent Activity */}
+        <RecentActivity />
+      </div>
+
+      {/* All Features */}
+      <ActionsSection />
+
+
     </div>
   );
 }

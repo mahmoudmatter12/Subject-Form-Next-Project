@@ -1,51 +1,79 @@
-// components/subject/SubjectCard.tsx
+// SubjectCard.tsx
 import { Button } from '@/components/ui/button';
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
+import { FaLock, FaLockOpen, FaTrash } from 'react-icons/fa';
+import Subject from '@/types/subject';
+
 interface SubjectCardProps {
-  subject: {
-    id: string;
-    subjectCode: string;
-    name: string;
-    isOpen: boolean;
-    prerequisites: string[];
-  };
-  onEdit: (id: string) => void;
+  subject: Subject;
+  onToggle: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
-export default function SubjectCard({ subject, onEdit, onDelete }: SubjectCardProps) {
+export default function SubjectCard({ subject, onToggle, onDelete, }: SubjectCardProps) {
   return (
-    <div className={`p-6 rounded-lg shadow-md w-72 border-1 flex-shrink-0 transition-transform transform hover:scale-105 ${subject.isOpen ? 'hover:shadow-green-500' : 'hover:shadow-red-500'}`}>
+    <div className={`bg-gray-800/50 border rounded-xl overflow-hidden transition-all hover:shadow-lg ${subject.isOpen ? 'border-green-500/30 hover:border-green-500/50' : 'border-red-500/30 hover:border-red-500/50'
+      }`}>
+      {/* Header */}
+      <div className="p-4 border-b border-gray-700/50">
+        <div className="flex justify-between items-start">
+          <Badge className={subject.isOpen ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}>
+            {subject.isOpen ? 'Open' : 'Closed'}
+          </Badge>
+        </div>
+      </div>
 
-        {/* Badge for IsOpen */}
-        <Badge className={`absolute top-2 right-2 ${subject.isOpen ? 'bg-green-500' : 'bg-red-500'}`}>
-          {subject.isOpen ? 'Open' : 'Closed'}
-        </Badge>
+      {/* Body */}
+      <div className="p-5">
+        <h3 className="text-lg font-bold text-white mb-1">{subject.name}</h3>
+        <p className="font-mono text-blue-400 text-sm mb-2">{subject.subjectCode}</p>
 
-        {/* Subject Code */}
-        <h1 className="text-2xl font-bold m-2 text-center mb-2">
-          {subject.name}
-        </h1>
+        <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
+          <span>{subject.creditHours || '0'} credits</span>
+        </div>
 
-        {/* Subject Name */}
-        <p className="text-gray-600 text-center mb-2">{subject.subjectCode}</p>
+        <div className="mb-4">
+          <p className="text-xs text-gray-500 mb-3">Prerequisites:</p>
+          <div className="flex flex-wrap gap-1">
+            {subject.prerequisites.length === 0 ? (
+              <Badge variant="outline" className="text-xs text-gray-500">
+                No prerequisites
+              </Badge>
+            ) : (
+              subject.prerequisites.map((pre: string) => (
+                <Badge key={pre} variant="outline" className="text-xs text-white">
+                  {pre}
+                </Badge>
+              ))
+            )}
 
-        {/* Toggle */}  
-        {/* Prerequisites */}
-        <p className="text-gray-600 text-center mb-4">
-          {subject.prerequisites.length === 0 ? 'No prerequisites' : 'Prerequisites: ' + subject.prerequisites.join(', ')}
-        </p>
+          </div>
+        </div>
+
 
         {/* Actions */}
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-between gap-2 mt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1 text-black"
+            onClick={() => onToggle(subject.id)}
 
-          <Button className="cursor-pointer" onClick={() => onEdit(subject.id)}>
+          >
+            {subject.isOpen ? <FaLock size={14} /> : <FaLockOpen size={14} />}
             {subject.isOpen ? 'Close' : 'Open'}
           </Button>
-          <Button variant="destructive" className="cursor-pointer" onClick={() => onDelete(subject.id)}>
-            Delete
+          <Button
+            variant="destructive"
+            size="sm"
+            className="gap-1"
+            onClick={() => onDelete(subject.id)}
+          >
+            <FaTrash size={14} /> Delete
           </Button>
         </div>
       </div>
+    </div>
   );
 }
+

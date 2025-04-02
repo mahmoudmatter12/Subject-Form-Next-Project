@@ -15,6 +15,8 @@ export async function POST(request: Request) {
       if (existingSubject) {
         return NextResponse.json({ error: 'Subject code already exists' }, { status: 405 });
       }
+
+      
   
       const newSubject = await db.subject.create({
         data: {
