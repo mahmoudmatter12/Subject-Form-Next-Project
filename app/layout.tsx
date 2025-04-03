@@ -10,7 +10,6 @@ import { Inter } from 'next/font/google'
 import { FaUniversity } from 'react-icons/fa'
 import "./globals.css";
 import AccountMenu from '@/components/utils/AccountMenu';
-
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {

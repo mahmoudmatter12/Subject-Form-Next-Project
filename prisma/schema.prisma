@@ -1,9 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,6 +8,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Existing Models (updated with quiz relations)
 model Student {
   id               String           @id @default(uuid())
   clirkId          String           @unique
@@ -31,14 +27,83 @@ model Student {
   academicGuide    academicGuide?
   subjects         Subject[]        @relation("StudentSubjects")
   submissions      Submission[]
+  quizSubmissions  QuizSubmission[]
+  createdQuizzes   Quiz[]
   role             Role             @default(STUDENT)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
   onboarded        Boolean          @default(false)
   enrolledSubjects UserEnrollment[]
+  LinkedInLink     String?
 
   @@index([clirkId, email, studentId])
   @@map("students")
+}
+
+model Quiz {
+  id           String           @id @default(uuid())
+  title        String
+  description  String
+  createdById  String
+  createdBy    Student          @relation(fields: [createdById], references: [id])
+  questions    Question[] // One-to-many (One quiz has many questions)
+  submissions  QuizSubmission[] // One-to-many (One quiz has many submissions)
+  subjectId    String?
+  subject      Subject?         @relation(fields: [subjectId], references: [id])
+  isPublished  Boolean          @default(false)
+  dueDate      DateTime?
+  timeLimit    Int?             @default(30)
+  maxAttempts  Int?             @default(1)
+  passingScore Int?             @default(50)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@map("quizzes")
+}
+
+model Question {
+  id            String       @id @default(uuid())
+  text          String
+  type          QuestionType @default(MULTIPLE_CHOICE)
+  options       String[] // For MCQ: ["Option 1", "Option 2"]
+  correctAnswer Int // Index of correct option (0-based)
+  points        Int          @default(1)
+  quizId        String // Foreign key to Quiz
+  quiz          Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers       Answer[] // One-to-many (One question has many answers across submissions)
+  createdAt     DateTime     @default(now())
+
+  @@map("questions")
+}
+
+model QuizSubmission {
+  id          String    @id @default(uuid())
+  quizId      String
+  studentId   String
+  quiz        Quiz      @relation(fields: [quizId], references: [id])
+  student     Student   @relation(fields: [studentId], references: [id])
+  answers     Answer[] // All answers for this submission
+  score       Float // Calculated score (sum of correct answers' points)
+  isPassed    Boolean // Computed from passingScore
+  feedback    String? // Instructor feedback
+  submittedAt DateTime  @default(now())
+  gradedAt    DateTime? // When instructor reviewed
+
+  @@map("quiz_submissions")
+}
+
+model Answer {
+  id                String         @id @default(uuid())
+  questionId        String
+  question          Question       @relation(fields: [questionId], references: [id])
+  selectedOption    Int? // For MCQ: index of chosen option
+  textResponse      String? // For short-answer questions
+  tureFalseResponse Boolean? // For true/false questions
+  isCorrect         Boolean
+  quizSubmission    QuizSubmission @relation(fields: [quizSubmissionId], references: [id])
+  quizSubmissionId  String
+
+  @@map("answers")
 }
 
 model CGPA {
@@ -51,31 +116,30 @@ model CGPA {
 }
 
 model Submission {
-  id                String              @id @default(uuid())
-  studentId         String?
-  student           Student?            @relation(fields: [studentId], references: [id])
-  status            SubmissionStatus    @default(PENDING)
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  SubjectSubmission SubjectSubmission[]
-  subjects          Subject[]
+  id        String           @id @default(uuid())
+  studentId String?
+  student   Student?         @relation(fields: [studentId], references: [id])
+  status    SubmissionStatus @default(PENDING)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  subjects  Subject[]
 
   @@map("submissions")
 }
 
 model Subject {
-  id                String              @id @default(uuid())
-  subjectCode       String              @unique
-  name              String
-  isOpen            Boolean             @default(false)
-  creditHours       Int                 @default(3)
-  prerequisites     String[]
-  students          Student[]           @relation("StudentSubjects")
-  createdAt         DateTime            @default(now())
-  UserEnrollment    UserEnrollment[]
-  SubjectSubmission SubjectSubmission[]
-  Submission        Submission?         @relation(fields: [submissionId], references: [id])
-  submissionId      String?
+  id             String           @id @default(uuid())
+  subjectCode    String           @unique
+  name           String
+  isOpen         Boolean          @default(false)
+  creditHours    Int              @default(3)
+  prerequisites  String[]
+  students       Student[]        @relation("StudentSubjects")
+  createdAt      DateTime         @default(now())
+  UserEnrollment UserEnrollment[]
+  Submission     Submission?      @relation(fields: [submissionId], references: [id])
+  submissionId   String?
+  quizzes        Quiz[]
 
   @@map("subjects")
 }
@@ -91,20 +155,11 @@ model UserEnrollment {
   @@map("user_enrollments")
 }
 
-model SubjectSubmission {
-  submissionId String
-  subjectId    String
-  submission   Submission @relation(fields: [submissionId], references: [id])
-  subject      Subject    @relation(fields: [subjectId], references: [id])
-  createdAt    DateTime   @default(now())
-
-  @@id([submissionId, subjectId])
-  @@map("subject_submissions")
-}
-
+// Enums (updated with quiz-related options)
 enum Role {
   STUDENT
   ADMIN
+  INSTRUCTOR // Added for quiz creators
 }
 
 enum Status {
@@ -139,4 +194,11 @@ enum SubmissionStatus {
   ACCSEPTED
   REJECTED
   PENDING
+}
+
+// New enums for quizzes
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
 }
