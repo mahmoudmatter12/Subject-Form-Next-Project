@@ -17,3 +17,4 @@ export type QuizQuestion = {
     updatedAt: Date;
     answers: QuestionAnswer[]
 }
+
