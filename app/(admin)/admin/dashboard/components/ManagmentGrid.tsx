@@ -1,7 +1,7 @@
 'use client'
 import SubjectMainComp from '@/components/Subject/SubjectMainComp'
 import React, { useEffect } from 'react'
-import QuizzesMainComp from '../../Quizzes/components/QuizzesMainComp'
+import QuizzesMainComp from './quizzes/QuizzesMainComp'
 import { useState } from 'react'
 import Subject from '@/types/subject'
 

@@ -36,6 +36,7 @@ const quizSchema = z.object({
                 options: z.array(z.string().min(1, "Option cannot be empty")).min(2, "At least 2 options required"),
                 correctAnswer: z.number().min(0, "Select a correct answer"),
                 points: z.number().min(1, "Minimum 1 point").default(1),
+                textAnswer: z.string().optional(),
             }),
         )
         .min(1, "At least one question is required"),
@@ -55,6 +56,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
     const [isOpen, setIsOpen] = useState(false)
     const [currentStep, setCurrentStep] = useState(1)
     const [isSubmitting, setIsSubmitting] = useState(false)
+
     const formRef = useRef<HTMLFormElement>(null)
 
     const {
@@ -63,7 +65,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
         control,
         reset,
         watch,
-        setValue,
+        // setValue,
         getValues,
         formState: { errors },
     } = useForm<QuizFormValues>({
@@ -73,7 +75,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
             description: "",
             subjectId: "",
             isPublished: false,
-            dueDate: null,
+            dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
             timeLimit: 30,
             maxAttempts: 0,
             passingScore: 60,
@@ -83,10 +85,11 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
         mode: "onChange",
     })
 
-    const { fields, append, remove } = useFieldArray({
+    const { fields, append, remove, update } = useFieldArray({
         control,
         name: "questions",
     })
+
 
 
     const handleFormSubmit: SubmitHandler<QuizFormValues> = async (data) => {
@@ -145,20 +148,26 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
     }
 
     const addOption = (questionIndex: number) => {
-        const currentOptions = watch(`questions.${questionIndex}.options`)
-        setValue(`questions.${questionIndex}.options`, [...currentOptions, ""])
+        const currentQuestion = fields[questionIndex]
+        update(questionIndex, {
+            ...currentQuestion,
+            options: [...currentQuestion.options, ""]
+        })
     }
 
-    const removeOption = (questionIndex: number, optionIndex: number) => {
-        const currentOptions = watch(`questions.${questionIndex}.options`)
-        const newOptions = currentOptions.filter((_, idx) => idx !== optionIndex)
-        setValue(`questions.${questionIndex}.options`, newOptions)
 
-        // Adjust correct answer if needed
-        const currentCorrect = watch(`questions.${questionIndex}.correctAnswer`)
-        if (currentCorrect >= optionIndex) {
-            setValue(`questions.${questionIndex}.correctAnswer`, Math.max(0, currentCorrect - 1))
-        }
+    const removeOption = (questionIndex: number, optionIndex: number) => {
+        const currentQuestion = fields[questionIndex]
+        const newOptions = currentQuestion.options.filter((_, idx) => idx !== optionIndex)
+
+        update(questionIndex, {
+            ...currentQuestion,
+            options: newOptions,
+            // Adjust correct answer if needed
+            correctAnswer: currentQuestion.correctAnswer >= optionIndex
+                ? Math.max(0, currentQuestion.correctAnswer - 1)
+                : currentQuestion.correctAnswer
+        })
     }
 
     const isStep1Valid = watch("title") && watch("subjectId")
@@ -322,6 +331,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                                 placeholder="Brief description of the quiz"
                                 rows={3}
                                 className="bg-gray-800 border-gray-700 text-white resize-none"
+                            // value={isEdit ? watch("description") : ""}
                             />
                         </div>
 
@@ -432,7 +442,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="flex-col h-24 gap-2 bg-gray-800/50 border-gray-700 hover:bg-indigo-500/20 hover:border-indigo-500/30"
+                                className="flex-col h-24 gap-2 bg-gray-800/50 text-gray-400 border-gray-700 hover:bg-indigo-500/20 hover:border-indigo-500/30"
                                 onClick={() => addQuestion("MULTIPLE_CHOICE")}
                             >
                                 <AlertCircle className="h-5 w-5 text-indigo-400" />
@@ -441,7 +451,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="flex-col h-24 gap-2 bg-gray-800/50 border-gray-700 hover:bg-indigo-500/20 hover:border-indigo-500/30"
+                                className="flex-col h-24 gap-2 bg-gray-800/50 text-gray-400 border-gray-700 hover:bg-indigo-500/20 hover:border-indigo-500/30"
                                 onClick={() => addQuestion("TRUE_FALSE")}
                             >
                                 <AlertCircle className="h-5 w-5 text-indigo-400" />
@@ -450,7 +460,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="flex-col h-24 gap-2 bg-gray-800/50 border-gray-700 hover:bg-indigo-500/20 hover:border-indigo-500/30"
+                                className="flex-col h-24 gap-2 bg-gray-800/50 text-gray-400 border-gray-700 hover:bg-indigo-500/20 hover:border-indigo-500/30"
                                 onClick={() => addQuestion("SHORT_ANSWER")}
                             >
                                 <AlertCircle className="h-5 w-5 text-indigo-400" />
@@ -460,7 +470,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
 
                         {/* Questions List */}
                         {fields.length === 0 ? (
-                            <div className="text-center py-8 text-gray-400 border border-dashed border-gray-700 rounded-lg">
+                            <div className="text-center py-8 text-gray-400 border border-dashed border-gray-600 rounded-lg">
                                 No questions added yet. Select a question type above.
                             </div>
                         ) : (
@@ -494,6 +504,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                                                     <Input
                                                         id={`question-${qIndex}`}
                                                         {...register(`questions.${qIndex}.text`)}
+                                                        defaultValue={isEdit ? question.text : ""}
                                                         className={`bg-gray-800 border-gray-700 text-white ${errors.questions?.[qIndex]?.text ? "border-rose-500" : ""
                                                             }`}
                                                     />
@@ -512,6 +523,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                                                             id={`points-${qIndex}`}
                                                             type="number"
                                                             {...register(`questions.${qIndex}.points`, { valueAsNumber: true })}
+                                                            defaultValue={isEdit ? question.points : 1}
                                                             min="1"
                                                             className="bg-gray-800 border-gray-700 text-white"
                                                         />
@@ -524,17 +536,19 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                                                         <Label className="text-white">
                                                             Options <span className="text-rose-500">*</span>
                                                         </Label>
-                                                        {question.options.map((_, oIndex) => (
+                                                        {question.options.map((option, oIndex) => (
                                                             <div key={oIndex} className="flex items-center gap-3">
                                                                 <input
                                                                     type="radio"
                                                                     id={`option-${qIndex}-${oIndex}`}
                                                                     {...register(`questions.${qIndex}.correctAnswer`)}
                                                                     value={oIndex}
+                                                                    defaultChecked={isEdit && question.correctAnswer === oIndex}
                                                                     className="h-4 w-4 text-indigo-600"
                                                                 />
                                                                 <Input
                                                                     {...register(`questions.${qIndex}.options.${oIndex}`)}
+                                                                    defaultValue={isEdit ? option : ""}
                                                                     className={`bg-gray-800 border-gray-700 text-white ${errors.questions?.[qIndex]?.options?.[oIndex] ? "border-rose-500" : ""
                                                                         }`}
                                                                     placeholder={`Option ${oIndex + 1}`}
@@ -576,6 +590,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                                                         <Input
                                                             id={`answer-${qIndex}`}
                                                             {...register(`questions.${qIndex}.options.0`)}
+                                                            defaultValue={isEdit ? question.textAnswer : "no answer"}
                                                             placeholder="Enter the correct answer"
                                                             className="bg-gray-800 border-gray-700 text-white"
                                                         />

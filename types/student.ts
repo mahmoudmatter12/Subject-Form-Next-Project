@@ -4,6 +4,7 @@ interface student {
   clirkId?: string;
   fname?: string;
   lname?: string | null;
+  fullName?: string;
   email?: string;
   role?: "STUDENT" | "ADMIN";
   studentId?: string;

@@ -28,7 +28,6 @@ export async function DELETE(
       );
     }
     
-
     // Delete the student
     await db.student.delete({ where: { id: studentId } });
     await client.users.deleteUser(clerdId!.clirkId);

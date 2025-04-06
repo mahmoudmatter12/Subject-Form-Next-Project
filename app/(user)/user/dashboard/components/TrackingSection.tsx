@@ -3,6 +3,7 @@ import { getTotalSubmissions } from "@/actions/SubmitionFeedBack";
 import { getTotalEnrolledSubjects } from "@/actions/EnrolledSubjects";
 import student from '@/types/student';
 import Link from 'next/link';
+import numberOfQuizzes from '@/actions/quizzes';
 // import * as Icons from 'react-icons/fa';
 
 interface TrackingSectionProps {
@@ -23,6 +24,7 @@ async function TrackingSection(student: TrackingSectionProps) {
 
     const { totalSubmissions } = await getTotalSubmissions({ id: id });
     const { totalEnrolledSubjects } = await getTotalEnrolledSubjects({ id: id });
+    const QuizzesLen = await numberOfQuizzes();
 
     const stats = [
         {
@@ -49,6 +51,30 @@ async function TrackingSection(student: TrackingSectionProps) {
                 </svg>
             )
         },
+        {
+            title: "Assignments",
+            value: 0,
+            description: "No assignments available",
+            link: "/user/assignments",
+            gradient: "from-purple-400 to-violet-500",
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h18M3 12h18m-7 5h7" />
+                </svg>
+            )
+        },
+        {
+            title: "Quizzes",
+            value: QuizzesLen || 0,
+            description: QuizzesLen ? "Available quizzes" : "No quizzes available",
+            link: "/user/dashboard/quizzes",
+            gradient: "from-pink-400 to-rose-500",
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m-8-8h16" />
+                </svg>
+            )
+        }
         
     ];
 

@@ -25,6 +25,9 @@ interface Quiz {
     title: string;
     description: string;
     createdById: string;
+    createdBy: {
+        fullName: string;
+    }
     subjectId: string;
     isPublished: boolean;
     dueDate: string | null;

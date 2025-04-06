@@ -6,7 +6,12 @@ export async function GET() {
     {
       include: {
         questions: true,
-        subject:true
+        subject:true,
+        createdBy:{
+          select:{
+            fullName:true
+          }
+        }
       },
     }
   );

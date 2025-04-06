@@ -9,6 +9,7 @@ import { Clock, Award, FileText, RotateCcw } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import ViewQuizCard from "./ViewQuizCard"
 import { FaTrash } from "react-icons/fa"
+import {  useMemo } from "react"
 
 interface QuizCardProps {
   quiz: Quiz
@@ -19,11 +20,14 @@ interface QuizCardProps {
 }
 
 const QuizCard = ({ quiz, handelPublishQuiz, subjects, onSuccess, handelDeleteQuiz }: QuizCardProps) => {
-  const dueDate = quiz.dueDate ? new Date(quiz.dueDate) : null
-  const isPastDue = dueDate && dueDate < new Date()
-  const subject = subjects.find((subject) => subject?.id === quiz?.subjectId)
-  const subjectName = subject ? subject.name : "No Subject"
-  const subjectCode = subject ? subject.subjectCode : "No Code"
+  const dueDate = quiz.dueDate ? new Date(quiz.dueDate) : null;
+  const isPastDue = dueDate && dueDate < new Date();
+  const subject = useMemo(() => subjects.find((s) => s?.id === quiz?.subjectId), [subjects, quiz.subjectId]);
+  const subjectName = subject ? subject.name : "No Subject";
+  const subjectCode = subject ? subject.subjectCode : "No Code";
+  const creator = quiz.createdBy.fullName;
+
+
 
   return (
     <Card className={`relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:translate-y-[-2px] 
@@ -42,6 +46,9 @@ const QuizCard = ({ quiz, handelPublishQuiz, subjects, onSuccess, handelDeleteQu
               </Badge>
               <span className="text-xs text-gray-400">{subjectName}</span>
             </div>
+            <p className="text-xs text-gray-400">
+              Created by: {creator}
+            </p>
           </div>
 
           <Badge variant={quiz.isPublished ? "default" : "destructive"}
@@ -51,6 +58,7 @@ const QuizCard = ({ quiz, handelPublishQuiz, subjects, onSuccess, handelDeleteQu
               }`}
           >
             {quiz.isPublished ? "Published" : "Draft"}
+
           </Badge>
         </div>
       </CardHeader>

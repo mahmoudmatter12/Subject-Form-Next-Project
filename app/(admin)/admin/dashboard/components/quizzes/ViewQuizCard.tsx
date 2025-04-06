@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import EditQuizCard from './EditQuizCard'
 import type Subject from "@/types/subject"
 import { useState } from 'react'
+
 interface ViewQuizCardProps {
     quiz: Quiz
     trigger?: React.ReactNode
