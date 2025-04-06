@@ -6,6 +6,7 @@ import getIdbyClirckId from '@/actions/IdbyCk';
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
     const { id } = await params;
     const userId = "user_2uOuFQeN3UNopBRbVWPi0fO2cMq"; // Hardcoded for testing - remove in production
+    // const { userId } = await auth();
     
     try {
         // 1. Authentication
@@ -43,6 +44,19 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
         // 4. Parse and validate request
         const updateData = await req.json();
+
+        const title = updateData.title.trim().toUpperCase().replace(/\s+/g, '-');
+        const quizTitle = await db.quiz.findFirst({
+            where: { title: title, id: { not: id } } // Exclude current quiz from title check
+        });
+        
+        // Check if the title is unique
+        if (quizTitle) {
+            return NextResponse.json(
+                { note: `${title} already used please change the title` },
+                { status: 400 }
+            );
+        }
 
         // 5. Prepare quiz metadata updates
         const updatePayload: Record<string, any> = {};
@@ -82,27 +96,48 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
                     
                     if (existingQuestion) {
                         // Update existing question
+                        const updateQuestionData: any = {
+                            type: question.type || existingQuestion.type,
+                            points: question.points ?? existingQuestion.points
+                        };
+
+                        // Handle different question types
+                        if (question.type === 'SHORT_ANSWER') {
+                            updateQuestionData.textAnswer = question.options?.[0] || '';
+                            updateQuestionData.correctAnswer = null;
+                            updateQuestionData.options = [];
+                        } else {
+                            updateQuestionData.options = question.options || existingQuestion.options;
+                            updateQuestionData.correctAnswer = Number(question.correctAnswer) ?? existingQuestion.correctAnswer;
+                            updateQuestionData.textAnswer = null;
+                        }
+
                         await tx.question.update({
                             where: { id: existingQuestion.id },
-                            data: {
-                                type: question.type || existingQuestion.type,
-                                options: question.options || existingQuestion.options,
-                                correctAnswer: question.correctAnswer ?? existingQuestion.correctAnswer,
-                                points: question.points ?? existingQuestion.points
-                            }
+                            data: updateQuestionData
                         });
                         existingQuestionsMap.delete(question.text); // Mark as processed
                     } else {
                         // Create new question
+                        const createQuestionData: any = {
+                            text: question.text,
+                            type: question.type || 'MULTIPLE_CHOICE',
+                            points: question.points ?? 1,
+                            quizId: id
+                        };
+
+                        if (question.type === 'SHORT_ANSWER') {
+                            createQuestionData.textAnswer = question.options?.[0] || '';
+                            createQuestionData.correctAnswer = null;
+                            createQuestionData.options = [];
+                        } else {
+                            createQuestionData.options = question.options || 
+                                (question.type === 'TRUE_FALSE' ? ['True', 'False'] : ['', '']);
+                            createQuestionData.correctAnswer = Number(question.correctAnswer) || 0;
+                        }
+
                         await tx.question.create({
-                            data: {
-                                text: question.text,
-                                type: question.type || 'MULTIPLE_CHOICE',
-                                options: question.options || [],
-                                correctAnswer: question.correctAnswer ?? 0,
-                                points: question.points ?? 1,
-                                quizId: id
-                            }
+                            data: createQuestionData
                         });
                     }
                 }
@@ -185,5 +220,3 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         );
     }
 }
-
-// need to focument this 

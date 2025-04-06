@@ -56,7 +56,7 @@ export default function SubjectCard({ subject, onToggle, onDelete, }: SubjectCar
           <Button
             variant="outline"
             size="sm"
-            className="gap-1 text-black"
+            className="gap-1 text-black cursor-pointer hover:bg-gray-700/50 hover:text-white hover:border-white "
             onClick={() => onToggle(subject.id)}
 
           >
@@ -66,7 +66,7 @@ export default function SubjectCard({ subject, onToggle, onDelete, }: SubjectCar
           <Button
             variant="destructive"
             size="sm"
-            className="gap-1"
+            className="gap-1 cursor-pointer hover:bg-red-700/70 hover:text-white hover:border-white"
             onClick={() => onDelete(subject.id)}
           >
             <FaTrash size={14} /> Delete

@@ -63,7 +63,7 @@ export default function StudentsTable() {
 
 
   return (
-    <div className="bg-gray-900/80 backdrop-blur-sm rounded-xl border border-gray-700/50 shadow-lg overflow-hidden">
+    <div className="bg-gray-900/80 backdrop-blur-sm rounded-xl border border-gray-700/50 shadow-lg overflow-hidden ">
       {/* Table Header with Controls */}
       <div className="p-6 border-b border-gray-700/50">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
@@ -140,7 +140,7 @@ export default function StudentsTable() {
       )}
       {/* Content Area */}
       {viewMode === 'cards' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 p-6 overflow-y-auto custom-scrollbar">
           {filteredStudents.length > 0 ? (
             filteredStudents.map(student => (
               <StudentCard
@@ -162,7 +162,7 @@ export default function StudentsTable() {
           )}
         </div>
       ) : (
-        <div className="overflow-x-auto p-6">
+        <div className="overflow-x-auto p-6  custom-scrollbar">
           <table className="w-full text-left text-gray-400">
             <thead className="text-xs text-gray-300 uppercase bg-gray-800/50">
               <tr>

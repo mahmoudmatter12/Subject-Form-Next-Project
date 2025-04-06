@@ -24,7 +24,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             },
         });
 
-        return NextResponse.json({ message: `Quiz updated successfully, Quiz is now ${!isPublished ? "published" : "Not published"}` }, { status: 200 });
+        return NextResponse.json({ message: `Quiz updated successfully, Quiz is now ${!isPublished ? "published" : "Not published"}`, quiz: quiz }, { status: 200 });
     }
     catch (error) {
         console.error("Error updating quiz:", error);

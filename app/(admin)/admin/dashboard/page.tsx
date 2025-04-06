@@ -1,5 +1,4 @@
 // app/admin/page.tsx
-import React from "react";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import NotAdmin from "@/components/NotAdmin";
@@ -7,12 +6,13 @@ import StudentsTable from "@/components/student/StudentsTable";
 import { GetUser } from "@/lib/GetUser";
 import student from "@/types/student";
 import CGPAPieChart from "@/components/Cgpa/CGPAPieChart";
-import SubjectMainComp from "@/components/Subject/SubjectMainComp";
+import ManagmentGrid from "./components/ManagmentGrid";
 
 
 const Admin = async () => {
   const { userId } = await auth();
   const student = await GetUser();
+
 
   if (!userId) {
     redirect("/sign-in");
@@ -33,10 +33,8 @@ const Admin = async () => {
       <div className="space-y-8">
         {/* StudentsTable is inside the table but properly structured */}
         <StudentsTable />
-
-        {/* All Subjects */}
-        <SubjectMainComp />
-
+        {/* Managment Component */}
+        <ManagmentGrid />
         {/* Statistics Based on CGPA */}
         <CGPAPieChart /> {/* Use the CGPA table component here */}
       </div>

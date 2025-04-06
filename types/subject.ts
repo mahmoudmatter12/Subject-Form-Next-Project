@@ -7,6 +7,8 @@ interface Subject {
     creditHours: number;
     prerequisites: string[];
     createdAt: string;
+    submissionId: string | null;
+
 }
 
 export default Subject; 

@@ -41,22 +41,24 @@ model Student {
 }
 
 model Quiz {
-  id           String           @id @default(uuid())
-  title        String
-  description  String
-  createdById  String
-  createdBy    Student          @relation(fields: [createdById], references: [id])
-  questions    Question[] // One-to-many (One quiz has many questions)
-  submissions  QuizSubmission[] // One-to-many (One quiz has many submissions)
-  subjectId    String?
-  subject      Subject?         @relation(fields: [subjectId], references: [id])
-  isPublished  Boolean          @default(false)
-  dueDate      DateTime?
-  timeLimit    Int?             @default(30)
-  maxAttempts  Int?             @default(1)
-  passingScore Int?             @default(50)
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  id             String           @id @default(uuid())
+  title          String           @unique
+  description    String
+  createdById    String
+  createdBy      Student          @relation(fields: [createdById], references: [id])
+  questions      Question[] // One-to-many (One quiz has many questions)
+  submissions    QuizSubmission[] // One-to-many (One quiz has many submissions)
+  subjectId      String?
+  subject        Subject?         @relation(fields: [subjectId], references: [id])
+  isPublished    Boolean          @default(false)
+  dueDate        DateTime?
+  timeLimit      Int?             @default(30)
+  maxAttempts    Int?             @default(0) // 0 means unlimited
+  attempts       Int?             @default(0) // Tracks how many attempts a student has made
+  passingScore   Int?             @default(50)
+  joinedStudents Int              @default(0) // Tracks how many students joined this quiz
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 
   @@map("quizzes")
 }
@@ -66,7 +68,8 @@ model Question {
   text          String
   type          QuestionType @default(MULTIPLE_CHOICE)
   options       String[] // For MCQ: ["Option 1", "Option 2"]
-  correctAnswer Int // Index of correct option (0-based)
+  correctAnswer Int? // Index of correct option (0-based)
+  textAnswer    String? // For short-answer questions
   points        Int          @default(1)
   quizId        String // Foreign key to Quiz
   quiz          Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
@@ -95,7 +98,7 @@ model QuizSubmission {
 model Answer {
   id                String         @id @default(uuid())
   questionId        String
-  question          Question       @relation(fields: [questionId], references: [id])
+  question          Question       @relation(fields: [questionId], references: [id], onDelete: Cascade)
   selectedOption    Int? // For MCQ: index of chosen option
   textResponse      String? // For short-answer questions
   tureFalseResponse Boolean? // For true/false questions

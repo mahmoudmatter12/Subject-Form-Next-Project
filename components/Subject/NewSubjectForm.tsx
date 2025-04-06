@@ -133,7 +133,7 @@ export default function NewSubjectForm({
                     )}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px] bg-gray-900 border-gray-700">
+            <DialogContent className="sm:max-w-2xl bg-gray-900/80 backdrop-blur-sm border-gray-700 max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-white">
                         <FiBook size={20} />
@@ -145,34 +145,36 @@ export default function NewSubjectForm({
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        {/* Subject Code */}
+                    <div className='grid grid-cols-2 gap-4'>
+                        <div className="space-y-2">
+                            {/* Subject Code */}
+                            <div className="space-y-2 text-white">
+                                <Label htmlFor="subjectCode">Subject Code *</Label>
+                                <Input
+                                    id="subjectCode"
+                                    placeholder="MATH101"
+                                    {...register('subjectCode')}
+                                    className={errors.subjectCode ? 'border-red-500' : ''}
+                                />
+                                {errors.subjectCode && (
+                                    <p className="text-sm text-red-500">{errors.subjectCode.message}</p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Subject Name */}
                         <div className="space-y-2 text-white">
-                            <Label htmlFor="subjectCode">Subject Code *</Label>
+                            <Label htmlFor="name">Subject Name *</Label>
                             <Input
-                                id="subjectCode"
-                                placeholder="MATH101"
-                                {...register('subjectCode')}
-                                className={errors.subjectCode ? 'border-red-500' : ''}
+                                id="name"
+                                placeholder="Calculus I"
+                                {...register('name')}
+                                className={errors.name ? 'border-red-500' : ''}
                             />
-                            {errors.subjectCode && (
-                                <p className="text-sm text-red-500">{errors.subjectCode.message}</p>
+                            {errors.name && (
+                                <p className="text-sm text-red-500">{errors.name.message}</p>
                             )}
                         </div>
-                    </div>
-
-                    {/* Subject Name */}
-                    <div className="space-y-2 text-white">
-                        <Label htmlFor="name">Subject Name *</Label>
-                        <Input
-                            id="name"
-                            placeholder="Calculus I"
-                            {...register('name')}
-                            className={errors.name ? 'border-red-500' : ''}
-                        />
-                        {errors.name && (
-                            <p className="text-sm text-red-500">{errors.name.message}</p>
-                        )}
                     </div>
 
                     {/* Prerequisites */}
@@ -246,7 +248,7 @@ export default function NewSubjectForm({
                             type="button"
                             onClick={() => handleOpenChange(false)}
                             className="gap-2 cursor-pointer border-1"
-                            >
+                        >
                             Cancel
                         </Button>
                         <Button
