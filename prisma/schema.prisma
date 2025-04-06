@@ -10,56 +10,57 @@ datasource db {
 
 // Existing Models (updated with quiz relations)
 model Student {
-  id               String           @id @default(uuid())
-  clirkId          String           @unique
-  studentId        String           @unique
-  fname            String
-  lname            String?
-  fullName         String?
-  arabicName       String?
-  email            String           @unique
-  phoneNumber      String?
-  imgUrl           String?
-  Level            level?
-  Program          program?
-  cgpa             String?
-  CGPA_Letter      String?
-  academicGuide    academicGuide?
-  subjects         Subject[]        @relation("StudentSubjects")
-  submissions      Submission[]
-  quizSubmissions  QuizSubmission[]
-  createdQuizzes   Quiz[]
-  role             Role             @default(STUDENT)
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  onboarded        Boolean          @default(false)
-  enrolledSubjects UserEnrollment[]
-  LinkedInLink     String?
+  id                String           @id @default(uuid())
+  clirkId           String           @unique
+  studentId         String           @unique
+  fname             String
+  lname             String?
+  fullName          String?
+  arabicName        String?
+  email             String           @unique
+  phoneNumber       String?
+  imgUrl            String?
+  Level             level?
+  Program           program?
+  cgpa              String?
+  CGPA_Letter       String?
+  academicGuide     academicGuide?
+  role              Role             @default(STUDENT)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  onboarded         Boolean          @default(false)
+  LinkedInLink      String?
+  subjects          Subject[]        @relation("StudentSubjects")
+  enrolledSubjects  UserEnrollment[]
+  submissions       Submission[]
+  quizSubmissions   QuizSubmission[]
+  createdQuizzes    Quiz[]           @relation("CreatedByRelation")
+  registeredQuizzes Quiz[]           @relation("RegisteredStudentsRelation")
 
   @@index([clirkId, email, studentId])
   @@map("students")
 }
 
 model Quiz {
-  id             String           @id @default(uuid())
-  title          String           @unique
-  description    String
-  createdById    String
-  createdBy      Student          @relation(fields: [createdById], references: [id])
-  questions      Question[] // One-to-many (One quiz has many questions)
-  submissions    QuizSubmission[] // One-to-many (One quiz has many submissions)
-  subjectId      String?
-  subject        Subject?         @relation(fields: [subjectId], references: [id])
-  isPublished    Boolean          @default(false)
-  dueDate        DateTime?
-  timeLimit      Int?             @default(30)
-  maxAttempts    Int?             @default(0) // 0 means unlimited
-  attempts       Int?             @default(0) // Tracks how many attempts a student has made
-  passingScore   Int?             @default(50)
-  joinedStudents Int              @default(0) // Tracks how many students joined this quiz
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-
+  id           String           @id @default(uuid())
+  title        String           @unique
+  description  String
+  createdById  String
+  isPublished  Boolean          @default(false)
+  subjectId    String?
+  timeLimit    Int?             @default(30)
+  maxAttempts  Int?             @default(0) // 0 means unlimited
+  attempts     Int?             @default(0) // Tracks how many attempts a student has made
+  passingScore Int?             @default(50)
+  dueDate      DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  createdBy    Student          @relation("CreatedByRelation", fields: [createdById], references: [id])
+  subject      Subject?         @relation(fields: [subjectId], references: [id])
+  questions    Question[]       // One-to-many (One quiz has many questions)
+  submissions  QuizSubmission[] // One-to-many (One quiz has many submissions)
+  students     Student[]        @relation("RegisteredStudentsRelation") // Many-to-many (Many students can register for many quizzes)
+  
   @@map("quizzes")
 }
 

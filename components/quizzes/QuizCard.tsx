@@ -17,6 +17,8 @@ interface QuizCardProps {
   subjects: Subject[]
   onSuccess?: () => void
   handelDeleteQuiz?: (id: string) => void
+  isRegistered?: boolean
+  hasAttemptsLeft?: boolean
 }
 
 const QuizCard = ({ quiz, handelPublishQuiz, subjects, onSuccess, handelDeleteQuiz }: QuizCardProps) => {

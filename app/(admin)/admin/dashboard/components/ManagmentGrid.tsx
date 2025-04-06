@@ -1,7 +1,7 @@
 'use client'
 import SubjectMainComp from '@/components/Subject/SubjectMainComp'
 import React, { useEffect } from 'react'
-import QuizzesMainComp from './quizzes/QuizzesMainComp'
+import QuizzesMainComp from '../../../../../components/quizzes/QuizzesMainComp'
 import { useState } from 'react'
 import Subject from '@/types/subject'
 
@@ -26,12 +26,12 @@ function ManagmentGrid() {
     useEffect(() => {
         fetchSubjects()
     }, [])
-    
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* All Subjects */}
             <SubjectMainComp />
-            <QuizzesMainComp subjects={subjects}/>
+            <QuizzesMainComp subjects={subjects} />
         </div>
     )
 }
