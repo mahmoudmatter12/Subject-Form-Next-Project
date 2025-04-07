@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       maxAttempts,
       passingScore,
       questions,
+      dueDate,
     } = requestData;
     let { title } = requestData;
 
@@ -65,43 +66,44 @@ export async function POST(req: Request) {
     // 4. Create the quiz
     const quiz = await db.quiz.create({
       data: {
-        title,
-        description,
-        createdById: creator.id,
-        subjectId: subjectId || null,
-        timeLimit: timeLimit || 30,
-        maxAttempts: maxAttempts || 1,
-        passingScore: passingScore || 50,
-        questions: {
-          create: questions.map((question) => {
-            // For SHORT_ANSWER, store the answer in the first option
-            console.log("Question:", question);
-            if (question.type === "SHORT_ANSWER") {
-              return {
-                text: question.text,
-                type: question.type,
-                points: question.points || 1,
-                correctAnswer: null,
-                textAnswer: question.options[0] || "",
-              };
-            }
+      title,
+      description,
+      createdById: creator.id,
+      subjectId: subjectId || null,
+      timeLimit: timeLimit || 30,
+      maxAttempts: maxAttempts || 1,
+      passingScore: passingScore || 50,
+      dueDate: dueDate ? new Date(dueDate).toISOString() : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // Ensure ISO-8601 format
+      questions: {
+        create: questions.map((question) => {
+        // For SHORT_ANSWER, store the answer in the first option
+        console.log("Question:", question);
+        if (question.type === "SHORT_ANSWER") {
+          return {
+          text: question.text,
+          type: question.type,
+          points: question.points || 1,
+          correctAnswer: null,
+          textAnswer: question.options[0] || "",
+          };
+        }
 
-            // For TRUE_FALSE/MULTIPLE_CHOICE
-            return {
-              text: question.text,
-              type: question.type || "MULTIPLE_CHOICE",
-              points: question.points || 1,
-              options:
-                question.type === "TRUE_FALSE"
-                  ? ["True", "False"]
-                  : question.options,
-              correctAnswer: Number(question.correctAnswer),
-            };
-          }),
-        },
+        // For TRUE_FALSE/MULTIPLE_CHOICE
+        return {
+          text: question.text,
+          type: question.type || "MULTIPLE_CHOICE",
+          points: question.points || 1,
+          options:
+          question.type === "TRUE_FALSE"
+            ? ["True", "False"]
+            : question.options,
+          correctAnswer: Number(question.correctAnswer),
+        };
+        }),
+      },
       },
       include: {
-        questions: true,
+      questions: true,
       },
     });
 

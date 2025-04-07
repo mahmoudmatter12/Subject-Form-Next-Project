@@ -10,14 +10,14 @@ datasource db {
 
 // Existing Models (updated with quiz relations)
 model Student {
-  id                String           @id @default(uuid())
-  clirkId           String           @unique
-  studentId         String           @unique
+  id                String             @id @default(uuid())
+  clirkId           String             @unique
+  studentId         String             @unique
   fname             String
   lname             String?
   fullName          String?
   arabicName        String?
-  email             String           @unique
+  email             String             @unique
   phoneNumber       String?
   imgUrl            String?
   Level             level?
@@ -25,42 +25,44 @@ model Student {
   cgpa              String?
   CGPA_Letter       String?
   academicGuide     academicGuide?
-  role              Role             @default(STUDENT)
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  onboarded         Boolean          @default(false)
+  role              Role               @default(STUDENT)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  onboarded         Boolean            @default(false)
   LinkedInLink      String?
-  subjects          Subject[]        @relation("StudentSubjects")
+  subjects          Subject[]          @relation("StudentSubjects")
   enrolledSubjects  UserEnrollment[]
   submissions       Submission[]
-  quizSubmissions   QuizSubmission[]
-  createdQuizzes    Quiz[]           @relation("CreatedByRelation")
-  registeredQuizzes Quiz[]           @relation("RegisteredStudentsRelation")
+  quizRegistrations QuizRegistration[]
+  quizAttempts      QuizAttempt[]
+  Quiz              Quiz[]             @relation("RegisteredStudentsRelation")
+  QuizCreation      Quiz[]             @relation("CreatedByRelation")
 
   @@index([clirkId, email, studentId])
   @@map("students")
 }
 
 model Quiz {
-  id           String           @id @default(uuid())
-  title        String           @unique
-  description  String
-  createdById  String
-  isPublished  Boolean          @default(false)
-  subjectId    String?
-  timeLimit    Int?             @default(30)
-  maxAttempts  Int?             @default(0) // 0 means unlimited
-  attempts     Int?             @default(0) // Tracks how many attempts a student has made
-  passingScore Int?             @default(50)
-  dueDate      DateTime?
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  createdBy    Student          @relation("CreatedByRelation", fields: [createdById], references: [id])
-  subject      Subject?         @relation(fields: [subjectId], references: [id])
-  questions    Question[]       // One-to-many (One quiz has many questions)
-  submissions  QuizSubmission[] // One-to-many (One quiz has many submissions)
-  students     Student[]        @relation("RegisteredStudentsRelation") // Many-to-many (Many students can register for many quizzes)
-  
+  id            String             @id @default(uuid())
+  title         String             @unique
+  description   String
+  createdById   String
+  isPublished   Boolean            @default(false)
+  subjectId     String?
+  timeLimit     Int?               @default(30)
+  maxAttempts   Int?               @default(0) // 0 means unlimited
+  attemptsNum   Int?               @default(0) // Tracks how many attempts a student has made
+  passingScore  Int?               @default(50)
+  dueDate       DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  createdBy     Student            @relation("CreatedByRelation", fields: [createdById], references: [id])
+  subject       Subject?           @relation(fields: [subjectId], references: [id])
+  questions     Question[] // One-to-many (One quiz has many questions)
+  students      Student[]          @relation("RegisteredStudentsRelation") // Many-to-many (Many students can register for many quizzes)
+  attempts      QuizAttempt[]
+  registrations QuizRegistration[]
+
   @@map("quizzes")
 }
 
@@ -74,41 +76,54 @@ model Question {
   points        Int          @default(1)
   quizId        String // Foreign key to Quiz
   quiz          Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  answers       Answer[] // One-to-many (One question has many answers across submissions)
+  answers       QuizAnswer[] // One-to-many (One question has many answers across submissions)
   createdAt     DateTime     @default(now())
 
   @@map("questions")
 }
 
-model QuizSubmission {
-  id          String    @id @default(uuid())
-  quizId      String
+model QuizAnswer {
+  id             String      @id @default(uuid())
+  quizAttemptId  String
+  quizAttempt    QuizAttempt @relation(fields: [quizAttemptId], references: [id], onDelete: Cascade)
+  questionId     String
+  question       Question    @relation(fields: [questionId], references: [id])
+  selectedOption Int?
+  textResponse   String?
+  isCorrect      Boolean     @default(false)
+
+  @@map("quiz_answers")
+}
+
+model QuizAttempt {
+  id          String       @id @default(uuid())
   studentId   String
-  quiz        Quiz      @relation(fields: [quizId], references: [id])
-  student     Student   @relation(fields: [studentId], references: [id])
-  answers     Answer[] // All answers for this submission
-  score       Float // Calculated score (sum of correct answers' points)
-  isPassed    Boolean // Computed from passingScore
-  feedback    String? // Instructor feedback
-  submittedAt DateTime  @default(now())
-  gradedAt    DateTime? // When instructor reviewed
+  student     Student      @relation(fields: [studentId], references: [id])
+  quizId      String
+  quiz        Quiz         @relation(fields: [quizId], references: [id])
+  score       Int // percentage score
+  timeSpent   Int // in seconds
+  isPassed    Boolean      @default(false)
+  completedAt DateTime     @default(now())
+  answers     QuizAnswer[]
 
-  @@map("quiz_submissions")
+  @@map("quiz_attempts")
 }
 
-model Answer {
-  id                String         @id @default(uuid())
-  questionId        String
-  question          Question       @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  selectedOption    Int? // For MCQ: index of chosen option
-  textResponse      String? // For short-answer questions
-  tureFalseResponse Boolean? // For true/false questions
-  isCorrect         Boolean
-  quizSubmission    QuizSubmission @relation(fields: [quizSubmissionId], references: [id])
-  quizSubmissionId  String
+model QuizRegistration {
+  id           String   @id @default(uuid())
+  studentId    String
+  student      Student  @relation(fields: [studentId], references: [id])
+  quizId       String
+  quiz         Quiz     @relation(fields: [quizId], references: [id])
+  registeredAt DateTime @default(now())
 
-  @@map("answers")
+  @@unique([studentId, quizId])
+  @@map("quiz_registrations")
 }
+
+
+
 
 model CGPA {
   id          String  @id @default(uuid())
@@ -150,11 +165,10 @@ model Subject {
 
 model UserEnrollment {
   studentId String
+  student   Student  @relation(fields: [studentId], references: [id])
   subjectId String
-  status    Status   @default(NOT_ENROLLED)
-  student   Student? @relation(fields: [studentId], references: [id])
-  subject   Subject? @relation(fields: [subjectId], references: [id])
-
+  subject   Subject  @relation(fields: [subjectId], references: [id])
+  status    String   @default("ENROLLED")
   @@id([studentId, subjectId])
   @@map("user_enrollments")
 }

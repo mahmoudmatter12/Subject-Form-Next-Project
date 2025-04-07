@@ -53,7 +53,7 @@ export default function RootLayout({
           {/* Navigation Bar */}
           {/* Main Content */}
           <AccountMenu />
-          <main className="container mx-auto md:px-6  pt-12 pb-12">
+          <main className="container mx-auto md:px-6  pt-12 pb-12 costom-scrollbar">
             {children}
           </main>
 
