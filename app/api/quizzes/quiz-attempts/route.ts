@@ -1,13 +1,13 @@
 // Endpoint to fetch quiz attempts with registration data
 
 import { NextResponse } from "next/server"
-// import { auth } from "@clerk/nextjs/server"
+import { auth } from "@clerk/nextjs/server"
 import { db } from "@/lib/db"
 
 export async function GET(req: Request) {
   try {
-    // const { userId } = await auth()
-    const userId = "user_2uOuFQeN3UNopBRbVWPi0fO2cMq" // For testing purposes, replace with actual userId from auth
+    const { userId } = await auth()
+    // const userId = "user_2uOuFQeN3UNopBRbVWPi0fO2cMq" // For testing purposes, replace with actual userId from auth
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

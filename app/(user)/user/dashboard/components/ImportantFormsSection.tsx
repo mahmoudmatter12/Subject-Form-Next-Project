@@ -8,7 +8,7 @@ function ImportantFormsSection() {
             description: "Register for your subjects for the upcoming semester. Make sure to check the prerequisites and availability.",
             link: "/user/form",
             StartDate: "2025-04-01",
-            EndDate: "2025-04-07",
+            EndDate: "2025-04-30",
             ActionText: "Register Now",
         },
     ]

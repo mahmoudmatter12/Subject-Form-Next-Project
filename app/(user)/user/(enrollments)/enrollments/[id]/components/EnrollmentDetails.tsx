@@ -60,7 +60,7 @@ export default function EnrollmentDetails({ enrollments ,loading }: EnrollmentDe
 
 
       {/* Enrollment List */}
-      <div className="space-y-4">
+      <div className="space-y-4 grid gird-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {paginatedEnrollments.length > 0 ? (
           paginatedEnrollments.map(({ id, subject, status, createdAt, updatedAt }) => (
             <div key={id} className="bg-cyan-900 p-4 rounded-lg">

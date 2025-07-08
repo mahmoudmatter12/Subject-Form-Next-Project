@@ -1,9 +1,9 @@
 'use client'
 import SubjectMainComp from '@/components/Subject/SubjectMainComp'
 import React, { useEffect } from 'react'
-import QuizzesMainComp from '../../../../../components/quizzes/QuizzesMainComp'
 import { useState } from 'react'
 import Subject from '@/types/subject'
+import QuizzesMainComp from '@/components/quizzes/QuizzesMainComp'
 
 function ManagmentGrid() {
     const [subjects, setSubjects] = useState<Subject[]>([])

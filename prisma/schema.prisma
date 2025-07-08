@@ -122,9 +122,6 @@ model QuizRegistration {
   @@map("quiz_registrations")
 }
 
-
-
-
 model CGPA {
   id          String  @id @default(uuid())
   studentId   String? @unique
